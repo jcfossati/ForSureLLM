@@ -81,7 +81,7 @@ yesno/classifier.py      (runtime : onnxruntime + tokenizers + soft prob calibr�
 
 ```bash
 pip install -e ".[train]"
-cp .env.example .env   # remplir ANTHROPIC_API_KEY
+cp .env.example .env   # remplir la clé du provider choisi
 
 python scripts/generate_dataset.py --target-per-lang 5000
 python scripts/augment_idioms.py
@@ -95,8 +95,80 @@ pytest tests/
 python scripts/eval.py
 ```
 
-Coût API observé : ~$15 (Sonnet génération+augmentation + Haiku labeling).
+Coût API observé (setup Anthropic par défaut) : ~$15 (Sonnet génération+augmentation + Haiku labeling).
 Training : 2m24 sur RTX Blackwell (CUDA 12.8), 5m11 sur CPU moderne.
+
+## Configuration multi-provider LLM
+
+Le pipeline utilise [LiteLLM](https://github.com/BerriAI/litellm) pour supporter n'importe quel provider (Anthropic, OpenAI, Google Gemini, Mistral, Groq, Ollama local, OpenRouter, Azure, Bedrock…). Deux fichiers contrôlent le choix :
+
+**`llm_config.yaml`** — modèles et paramètres (commité, versionné) :
+
+```yaml
+generation:                                # phrase génération (créatif)
+  model: anthropic/claude-sonnet-4-6
+  max_tokens: 4096
+
+labeling:                                  # soft-label JSON (économique)
+  model: anthropic/claude-haiku-4-5-20251001
+  max_tokens: 128
+
+labeling_fallback:                         # re-label si primary hésite (<0.6)
+  model: anthropic/claude-sonnet-4-6
+  max_tokens: 128
+```
+
+**`.env`** — clés API (gitignored, seulement les providers utilisés) :
+
+```
+ANTHROPIC_API_KEY=sk-ant-...
+OPENAI_API_KEY=sk-...
+GEMINI_API_KEY=...
+```
+
+### Exemples de configs alternatives
+
+**Tout OpenAI** :
+```yaml
+generation:
+  model: gpt-4o
+labeling:
+  model: gpt-4o-mini
+labeling_fallback:
+  model: gpt-4o
+```
+
+**Gemini** :
+```yaml
+generation:
+  model: gemini/gemini-2.5-pro
+labeling:
+  model: gemini/gemini-2.5-flash
+labeling_fallback:
+  model: gemini/gemini-2.5-pro
+```
+
+**Local (gratuit, Ollama)** :
+```yaml
+generation:
+  model: ollama/qwen2.5:32b
+labeling:
+  model: ollama/qwen2.5:7b
+labeling_fallback:
+  model: ollama/qwen2.5:32b
+```
+
+**Hybride** (Sonnet pour la créativité, Haiku labeling via Groq pour la vitesse) :
+```yaml
+generation:
+  model: anthropic/claude-sonnet-4-6
+labeling:
+  model: groq/llama-3.3-70b-versatile
+labeling_fallback:
+  model: anthropic/claude-sonnet-4-6
+```
+
+Le caching de prompt Anthropic est activé automatiquement quand le provider est Anthropic, sinon ignoré silencieusement.
 
 ## Tests & eval
 

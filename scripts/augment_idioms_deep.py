@@ -24,13 +24,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from anthropic import AsyncAnthropic
-from dotenv import load_dotenv
+from yesno.llm import LLMClient
 
-load_dotenv(override=True)
-
-MODEL = "claude-sonnet-4-6"
-MAX_TOKENS = 2048
 PER_IDIOM = 20
 
 # Lissage des soft labels
@@ -199,7 +194,7 @@ IDIOMS: list[IdiomSeed] = [
 
 
 async def generate_batch(
-    client: AsyncAnthropic,
+    client: LLMClient,
     seed: IdiomSeed,
     semaphore: asyncio.Semaphore,
 ) -> list[dict]:
@@ -217,13 +212,7 @@ async def generate_batch(
     async with semaphore:
         for attempt in range(3):
             try:
-                resp = await client.messages.create(
-                    model=MODEL,
-                    max_tokens=MAX_TOKENS,
-                    system=[{"type": "text", "text": SYSTEM_PROMPT, "cache_control": {"type": "ephemeral"}}],
-                    messages=[{"role": "user", "content": user_msg}],
-                )
-                text = resp.content[0].text.strip()
+                text = (await client.complete(system=SYSTEM_PROMPT, user=user_msg)).strip()
                 if text.startswith("```"):
                     text = text.split("```")[1]
                     if text.startswith("json"):
@@ -237,7 +226,7 @@ async def generate_batch(
                         "phrase": str(p).strip(),
                         "lang": seed.lang,
                         "labels": labels,
-                        "teacher": "sonnet_hardcoded",
+                        "teacher": "hardcoded",
                         "source_idiom": seed.idiom,
                     }
                     for p in phrases
@@ -265,7 +254,8 @@ async def main(concurrency: int, out_path: Path) -> None:
                     pass
         print(f"[resume] {len(existing)} phrases existantes")
 
-    client = AsyncAnthropic(max_retries=5)
+    client = LLMClient("generation")
+    print(f"[model] generation = {client.model}")
     semaphore = asyncio.Semaphore(concurrency)
     tasks = [generate_batch(client, s, semaphore) for s in IDIOMS]
 

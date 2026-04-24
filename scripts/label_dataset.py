@@ -20,14 +20,9 @@ import json
 import sys
 from pathlib import Path
 
-from anthropic import AsyncAnthropic
-from dotenv import load_dotenv
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
-load_dotenv(override=True)
-
-HAIKU = "claude-haiku-4-5-20251001"
-SONNET = "claude-sonnet-4-6"
-MAX_TOKENS = 128
+from yesno.llm import LLMClient
 
 SYSTEM_PROMPT = """Tu es un classifieur sémantique pour phrases courtes (EN et FR).
 
@@ -80,8 +75,7 @@ def parse_labels(text: str) -> dict[str, float] | None:
 
 
 async def classify_one(
-    client: AsyncAnthropic,
-    model: str,
+    client: LLMClient,
     phrase: str,
     lang: str,
     semaphore: asyncio.Semaphore,
@@ -90,19 +84,8 @@ async def classify_one(
     async with semaphore:
         for attempt in range(3):
             try:
-                resp = await client.messages.create(
-                    model=model,
-                    max_tokens=MAX_TOKENS,
-                    system=[
-                        {
-                            "type": "text",
-                            "text": SYSTEM_PROMPT,
-                            "cache_control": {"type": "ephemeral"},
-                        }
-                    ],
-                    messages=[{"role": "user", "content": user_msg}],
-                )
-                labels = parse_labels(resp.content[0].text)
+                text = await client.complete(system=SYSTEM_PROMPT, user=user_msg)
+                labels = parse_labels(text)
                 if labels is not None:
                     return labels
             except Exception as e:
@@ -121,7 +104,8 @@ def load_jsonl(path: Path) -> list[dict]:
 
 
 async def label_language(
-    client: AsyncAnthropic,
+    primary: LLMClient,
+    fallback: LLMClient,
     lang: str,
     raw_path: Path,
     out_path: Path,
@@ -139,15 +123,15 @@ async def label_language(
     semaphore = asyncio.Semaphore(concurrency)
 
     async def label_row(row: dict) -> dict | None:
-        labels = await classify_one(client, HAIKU, row["phrase"], lang, semaphore)
+        labels = await classify_one(primary, row["phrase"], lang, semaphore)
         if labels is None:
             return None
-        teacher = "haiku"
+        teacher = "primary"
         if max(labels.values()) < reconfirm_threshold:
-            refined = await classify_one(client, SONNET, row["phrase"], lang, semaphore)
+            refined = await classify_one(fallback, row["phrase"], lang, semaphore)
             if refined is not None:
                 labels = refined
-                teacher = "sonnet"
+                teacher = "fallback"
         out = {"phrase": row["phrase"], "lang": lang, "labels": labels, "teacher": teacher}
         if "register" in row:
             out["register"] = row["register"]
@@ -178,10 +162,14 @@ async def label_language(
 async def main(
     raw_dir: Path, out_dir: Path, concurrency: int, reconfirm_threshold: float
 ) -> None:
-    client = AsyncAnthropic(max_retries=8)
+    primary = LLMClient("labeling", max_retries=8)
+    fallback = LLMClient("labeling_fallback", max_retries=8)
+    print(f"[model] primary  = {primary.model}")
+    print(f"[model] fallback = {fallback.model}")
     for lang in ("en", "fr"):
         await label_language(
-            client=client,
+            primary=primary,
+            fallback=fallback,
             lang=lang,
             raw_path=raw_dir / f"{lang}.jsonl",
             out_path=out_dir / f"{lang}.jsonl",

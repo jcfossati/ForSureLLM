@@ -1,0 +1,32 @@
+# Configuration des modèles LLM pour le pipeline.
+#
+# Format model : "provider/model-id" (via LiteLLM)
+#   - anthropic/claude-sonnet-4-6
+#   - anthropic/claude-haiku-4-5-20251001
+#   - gpt-4o, gpt-4o-mini
+#   - gemini/gemini-2.5-pro, gemini/gemini-2.5-flash
+#   - mistral/mistral-large-latest
+#   - groq/llama-3.3-70b-versatile
+#   - ollama/qwen2.5:14b, ollama/llama3.1
+#   - openrouter/anthropic/claude-sonnet-4-6
+#
+# Clés API : dans .env (ANTHROPIC_API_KEY, OPENAI_API_KEY, GEMINI_API_KEY, etc.)
+#
+# Sonnet caching : si le modèle est Anthropic, le system prompt est auto-caché.
+# Pour les autres providers, la caching est ignorée silencieusement.
+
+# Génération de phrases diverses et créatives
+generation:
+  model: anthropic/claude-sonnet-4-6
+  max_tokens: 4096
+
+# Labeling soft {yes, no, unknown} — modèle moins cher suffit
+labeling:
+  model: anthropic/claude-haiku-4-5-20251001
+  max_tokens: 128
+
+# Re-label des cas où le labeler principal hésite (max confidence < 0.6)
+# Utiliser un modèle plus puissant que le labeler principal
+labeling_fallback:
+  model: anthropic/claude-sonnet-4-6
+  max_tokens: 128
