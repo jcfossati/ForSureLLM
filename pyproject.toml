@@ -2,6 +2,7 @@
 name = "ForSureLLM"
 version = "0.1.0"
 description = "YES/NO/unknown classifier"
+license = "Apache-2.0"
 requires-python = ">=3.10"
 dependencies = [
     "onnxruntime>=1.17",
