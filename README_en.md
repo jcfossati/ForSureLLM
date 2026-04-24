@@ -49,6 +49,8 @@ pip install -e .
 
 Runtime deps: `onnxruntime`, `tokenizers`, `numpy`. The tokenizer and config are bundled in `forsurellm/models/`. The `forsurellm-int8.onnx` file (113 MB) is **not** committed (GitHub's 100 MB limit) — you must either fetch it separately or rebuild it via the "Reproducing training" section below.
 
+LLM is downloadable on Huggingface : https://huggingface.co/maxoojc/ForSureLLM
+
 ## Web test interface
 
 ```bash
