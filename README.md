@@ -49,6 +49,8 @@ pip install -e .
 
 Runtime : `onnxruntime`, `tokenizers`, `numpy`. Le tokenizer et la config sont bundlés dans `forsurellm/models/`. Le fichier `forsurellm-int8.onnx` (113 MB) n'est **pas** commité (limite GitHub 100 MB) — il faut soit le récupérer séparément, soit le re-générer via la section "Reproduire l'entraînement" ci-dessous.
 
+Le LLM est disponible sur Huggingface : https://huggingface.co/maxoojc/ForSureLLM
+
 ## Interface web de test
 
 ```bash
