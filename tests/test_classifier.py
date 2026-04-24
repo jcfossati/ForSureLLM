@@ -5,7 +5,7 @@ import time
 
 import pytest
 
-from yesno import classify
+from forsurellm import classify
 
 
 _MODEL_AVAILABLE = True

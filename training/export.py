@@ -5,9 +5,9 @@ Usage:
 
 Entrée : checkpoint HuggingFace (AutoModelForSequenceClassification).
 Sortie :
-    yesno/models/yesno-int8.onnx
-    yesno/models/tokenizer.json
-    yesno/models/config.json   (id2label, max_length)
+    forsurellm/models/forsurellm-int8.onnx
+    forsurellm/models/tokenizer.json
+    forsurellm/models/config.json   (id2label, max_length)
 """
 from __future__ import annotations
 
@@ -87,7 +87,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--src", type=Path, default=Path("checkpoints/best"))
     parser.add_argument("--work-dir", type=Path, default=Path("checkpoints/onnx"))
-    parser.add_argument("--out-dir", type=Path, default=Path("yesno/models"))
+    parser.add_argument("--out-dir", type=Path, default=Path("forsurellm/models"))
     parser.add_argument("--max-length", type=int, default=64)
     args = parser.parse_args()
 
@@ -95,7 +95,7 @@ def main() -> None:
     onnx_path = pick_onnx(int8_dir)
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
-    final_onnx = args.out_dir / "yesno-int8.onnx"
+    final_onnx = args.out_dir / "forsurellm-int8.onnx"
     shutil.copy(onnx_path, final_onnx)
 
     tokenizer = AutoTokenizer.from_pretrained(str(int8_dir))

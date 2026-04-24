@@ -16,32 +16,32 @@ Classifier une phrase courte (réponse utilisateur) en `yes` / `no` / `unknown`,
 
 ## Pipeline
 
-### 1. Génération dataset (`scripts/generate_dataset.py`)
+### 1. Génération dataset (`training/generate.py`)
 Sonnet génère ~8700 phrases courtes EN+FR, équilibrées sur 3 classes × 8 registres (familier, soutenu, argot, indirect, sarcastique, interjection, fautes, neutre).
 
-### 2. Augmentation idiomatique (`scripts/augment_idioms.py` + `augment_idioms_deep.py`)
+### 2. Augmentation idiomatique (`training/augment_idioms.py` + `augment_idioms_deep.py`)
 ~3300 phrases idiomatiques supplémentaires :
 - `augment_idioms.py` : largeur (60 seeds thématiques × 30 variantes) — couvre régionalismes (Québec, AAVE, british, aussie) et sarcasmes.
 - `augment_idioms_deep.py` : profondeur (102 idiomes clés × 20 variantes contextuelles, soft labels hardcodés 0.92/0.04/0.04).
 
-### 3. Labeling soft (`scripts/label_dataset.py`)
+### 3. Labeling soft (`training/label.py`)
 Claude Haiku 4.5 attribue `{yes, no, unknown}` calibré. Re-label Sonnet sur confiance max <0.6.
 
-### 4. Nettoyage (`scripts/clean_dataset.py`)
+### 4. Nettoyage (`training/clean.py`)
 Retrait des unknowns "pure noise" (faits soutenus/neutres très confiants, aucune valeur comme réponse).
 
-### 5. Training (`scripts/train.py`)
+### 5. Training (`training/train.py`)
 Fine-tuning MiniLM-L12 multilingue avec head 3 classes, loss KL-divergence sur soft labels, 8 epochs, batch 32, lr 2e-5, warmup 10%, weight decay 0.01.
 
-### 6. Calibration (`scripts/calibrate.py`)
+### 6. Calibration (`training/calibrate.py`)
 Temperature scaling post-hoc : LBFGS sur NLL (hard labels) pour trouver T optimal. Sauvegarde T dans `temperature.json`.
 
-### 7. Export (`scripts/export.py`)
+### 7. Export (`training/export.py`)
 ONNX via `optimum.exporters.onnx` → quantization int8 dynamique (avx512-vnni) → benchmark CPU. Temperature injectée dans `config.json`.
 
-### 8. API d'usage (`yesno/`)
+### 8. API d'usage (`forsurellm/`)
 ```python
-from yesno import classify
+from forsurellm import classify
 classify("carrément")           # ("yes", 0.98)
 classify("laisse tomber")       # ("no", 0.98)
 classify("il pleut")            # ("unknown", 0.97)
@@ -64,7 +64,7 @@ ForSureLLM/
 │   ├── labeled/          # {en,fr}.jsonl + idioms_deep.jsonl (Haiku label)
 │   └── splits/           # train/val/test.jsonl stratifiés
 ├── scripts/              # pipeline reproductible
-├── yesno/                # package runtime (classifier.py + ONNX int8)
+├── forsurellm/                # package runtime (classifier.py + ONNX int8)
 ├── web/                  # interface HTML de test (fastapi)
 ├── tests/                # tests unitaires + eval adversarial
 └── checkpoints/          # HF + ONNX fp32/int8 (gitignored)

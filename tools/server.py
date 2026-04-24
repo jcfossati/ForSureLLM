@@ -21,8 +21,8 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
-from yesno import classify
-from yesno.classifier import _load, _softmax
+from forsurellm import classify
+from forsurellm.classifier import _load, _softmax
 
 ROOT = Path(__file__).parent.parent
 WEB_DIR = ROOT / "web"
