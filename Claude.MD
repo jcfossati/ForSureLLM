@@ -6,8 +6,9 @@ YES / NO / unknown classifier EN+FR distillé — lib Python autonome, inférenc
 Classifier une phrase courte (réponse utilisateur) en `yes` / `no` / `unknown`, sans appel API, latence <5 ms CPU, modèle autonome. Rôle : oracle de consentement — l'application hôte maintient l'état de l'action en cours, le classifier dit seulement si l'utilisateur adhère/refuse/hésite.
 
 ## Stack
-- **Teacher génération** : Claude Sonnet 4.6 via API (diversité/créativité des phrases)
-- **Teacher labeling** : Claude Haiku 4.5 via API (tâche JSON contrainte, 4x moins cher)
+- **Teacher génération** : défaut Claude Sonnet 4.6 (configurable via `llm_config.yaml`)
+- **Teacher labeling** : défaut Claude Haiku 4.5 (configurable, avec fallback sur modèle plus puissant si confidence <0.6)
+- **Provider router** : [LiteLLM](https://github.com/BerriAI/litellm) — supporte Anthropic, OpenAI, Gemini, Mistral, Groq, Ollama, OpenRouter, Azure, Bedrock
 - **Backbone student** : `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`
 - **Training** : HuggingFace `transformers` + `datasets`
 - **Export** : ONNX + quantization int8 via `optimum`

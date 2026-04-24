@@ -22,14 +22,11 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-from anthropic import AsyncAnthropic
-from dotenv import load_dotenv
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
-load_dotenv(override=True)
+from yesno.llm import LLMClient
 
-MODEL = "claude-sonnet-4-6"
 BATCH_SIZE = 50
-MAX_TOKENS = 4096
 
 CLASSES = ("yes", "no", "unknown")
 REGISTERS = (
@@ -93,7 +90,7 @@ def plan_batches(target_per_lang: int) -> list[BatchSpec]:
 
 
 async def generate_batch(
-    client: AsyncAnthropic,
+    client: LLMClient,
     spec: BatchSpec,
     semaphore: asyncio.Semaphore,
 ) -> list[dict]:
@@ -103,19 +100,7 @@ async def generate_batch(
     async with semaphore:
         for attempt in range(3):
             try:
-                resp = await client.messages.create(
-                    model=MODEL,
-                    max_tokens=MAX_TOKENS,
-                    system=[
-                        {
-                            "type": "text",
-                            "text": SYSTEM_PROMPT,
-                            "cache_control": {"type": "ephemeral"},
-                        }
-                    ],
-                    messages=[{"role": "user", "content": user_msg}],
-                )
-                text = resp.content[0].text.strip()
+                text = (await client.complete(system=SYSTEM_PROMPT, user=user_msg)).strip()
                 if text.startswith("```"):
                     text = text.split("```")[1]
                     if text.startswith("json"):
@@ -160,7 +145,8 @@ async def main(target_per_lang: int, concurrency: int, out_dir: Path) -> None:
     specs = plan_batches(target_per_lang)
     print(f"[plan] {len(specs)} batchs × {BATCH_SIZE} = {len(specs) * BATCH_SIZE} phrases cibles")
 
-    client = AsyncAnthropic()
+    client = LLMClient("generation")
+    print(f"[model] generation = {client.model}")
     semaphore = asyncio.Semaphore(concurrency)
     files = {lang: paths[lang].open("a", encoding="utf-8") for lang in ("en", "fr")}
 
