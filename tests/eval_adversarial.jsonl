@@ -1,0 +1,73 @@
+{"phrase": "yes", "lang": "en", "expected": "yes", "category": "canonical"}
+{"phrase": "no", "lang": "en", "expected": "no", "category": "canonical"}
+{"phrase": "oui", "lang": "fr", "expected": "yes", "category": "canonical"}
+{"phrase": "non", "lang": "fr", "expected": "no", "category": "canonical"}
+{"phrase": "carrément", "lang": "fr", "expected": "yes", "category": "canonical"}
+{"phrase": "absolutely", "lang": "en", "expected": "yes", "category": "canonical"}
+{"phrase": "nope", "lang": "en", "expected": "no", "category": "canonical"}
+{"phrase": "nan", "lang": "fr", "expected": "no", "category": "canonical"}
+{"phrase": "ouais", "lang": "fr", "expected": "yes", "category": "canonical"}
+{"phrase": "yeah", "lang": "en", "expected": "yes", "category": "canonical"}
+
+{"phrase": "peut-être", "lang": "fr", "expected": "unknown", "category": "hedging"}
+{"phrase": "maybe", "lang": "en", "expected": "unknown", "category": "hedging"}
+{"phrase": "bof", "lang": "fr", "expected": "unknown", "category": "hedging"}
+{"phrase": "je sais pas trop", "lang": "fr", "expected": "unknown", "category": "hedging"}
+{"phrase": "I'm not sure", "lang": "en", "expected": "unknown", "category": "hedging"}
+{"phrase": "mouais", "lang": "fr", "expected": "unknown", "category": "hedging"}
+{"phrase": "ça dépend", "lang": "fr", "expected": "unknown", "category": "hedging"}
+{"phrase": "it depends", "lang": "en", "expected": "unknown", "category": "hedging"}
+
+{"phrase": "carrement", "lang": "fr", "expected": "yes", "category": "missing_accents"}
+{"phrase": "peut-etre", "lang": "fr", "expected": "unknown", "category": "missing_accents"}
+{"phrase": "bien sur", "lang": "fr", "expected": "yes", "category": "missing_accents"}
+{"phrase": "evidemment", "lang": "fr", "expected": "yes", "category": "missing_accents"}
+{"phrase": "eh non", "lang": "fr", "expected": "no", "category": "missing_accents"}
+
+{"phrase": "ouai", "lang": "fr", "expected": "yes", "category": "typos"}
+{"phrase": "yse", "lang": "en", "expected": "yes", "category": "typos"}
+{"phrase": "noooo", "lang": "en", "expected": "no", "category": "typos"}
+{"phrase": "nooon", "lang": "fr", "expected": "no", "category": "typos"}
+{"phrase": "yyyyep", "lang": "en", "expected": "yes", "category": "typos"}
+
+{"phrase": "mdr", "lang": "fr", "expected": "unknown", "category": "slang_abbrev"}
+{"phrase": "lol", "lang": "en", "expected": "unknown", "category": "slang_abbrev"}
+{"phrase": "tkt", "lang": "fr", "expected": "yes", "category": "slang_abbrev"}
+{"phrase": "np", "lang": "en", "expected": "yes", "category": "slang_abbrev"}
+{"phrase": "grv", "lang": "fr", "expected": "no", "category": "slang_abbrev"}
+{"phrase": "nah fam", "lang": "en", "expected": "no", "category": "slang_abbrev"}
+
+{"phrase": "!", "lang": "fr", "expected": "unknown", "category": "degenerate"}
+{"phrase": "?", "lang": "fr", "expected": "unknown", "category": "degenerate"}
+{"phrase": "...", "lang": "fr", "expected": "unknown", "category": "degenerate"}
+{"phrase": "   ", "lang": "fr", "expected": "unknown", "category": "degenerate"}
+
+{"phrase": "nope nope nope", "lang": "en", "expected": "no", "category": "repetition"}
+{"phrase": "oui oui oui", "lang": "fr", "expected": "yes", "category": "repetition"}
+{"phrase": "yes and no", "lang": "en", "expected": "unknown", "category": "repetition"}
+
+{"phrase": "absolutely, I love impossible deadlines", "lang": "en", "expected": "no", "category": "sarcasm", "known_failure": true}
+{"phrase": "oui bien sûr, comme toujours...", "lang": "fr", "expected": "no", "category": "sarcasm", "known_failure": true}
+{"phrase": "oh great, another meeting", "lang": "en", "expected": "no", "category": "sarcasm", "known_failure": true}
+{"phrase": "bien entendu, c'est évident", "lang": "fr", "expected": "yes", "category": "sarcasm"}
+{"phrase": "yeah right", "lang": "en", "expected": "no", "category": "sarcasm", "known_failure": true}
+
+{"phrase": "j'aimerais bien mais non", "lang": "fr", "expected": "no", "category": "compound"}
+{"phrase": "I'd love to but I can't", "lang": "en", "expected": "no", "category": "compound"}
+{"phrase": "oui avec plaisir", "lang": "fr", "expected": "yes", "category": "compound"}
+{"phrase": "pas de problème", "lang": "fr", "expected": "yes", "category": "compound"}
+{"phrase": "no problem", "lang": "en", "expected": "yes", "category": "compound"}
+{"phrase": "why not", "lang": "en", "expected": "yes", "category": "compound"}
+{"phrase": "pourquoi pas", "lang": "fr", "expected": "yes", "category": "compound"}
+
+{"phrase": "it's raining", "lang": "en", "expected": "unknown", "category": "off_topic"}
+{"phrase": "j'ai mangé une pizza", "lang": "fr", "expected": "unknown", "category": "off_topic"}
+{"phrase": "what time is the meeting", "lang": "en", "expected": "unknown", "category": "off_topic"}
+{"phrase": "mon chat dort", "lang": "fr", "expected": "unknown", "category": "off_topic"}
+
+{"phrase": "oh yeah", "lang": "en", "expected": "yes", "category": "interjection"}
+{"phrase": "ah non", "lang": "fr", "expected": "no", "category": "interjection"}
+{"phrase": "mais oui", "lang": "fr", "expected": "yes", "category": "interjection"}
+{"phrase": "hell no", "lang": "en", "expected": "no", "category": "interjection"}
+{"phrase": "bah ouais", "lang": "fr", "expected": "yes", "category": "interjection"}
+{"phrase": "heck yes", "lang": "en", "expected": "yes", "category": "interjection"}

@@ -1,0 +1,86 @@
+{
+  "total": 63,
+  "correct": 56,
+  "accuracy": 0.889,
+  "known_failures": 0,
+  "unexpected_failures": 7,
+  "by_category": {
+    "canonical": {
+      "correct": 10,
+      "total": 10,
+      "accuracy": 1.0,
+      "known_failures": 0,
+      "unexpected_failures": 0
+    },
+    "compound": {
+      "correct": 6,
+      "total": 7,
+      "accuracy": 0.857,
+      "known_failures": 0,
+      "unexpected_failures": 1
+    },
+    "degenerate": {
+      "correct": 3,
+      "total": 4,
+      "accuracy": 0.75,
+      "known_failures": 0,
+      "unexpected_failures": 1
+    },
+    "hedging": {
+      "correct": 8,
+      "total": 8,
+      "accuracy": 1.0,
+      "known_failures": 0,
+      "unexpected_failures": 0
+    },
+    "interjection": {
+      "correct": 6,
+      "total": 6,
+      "accuracy": 1.0,
+      "known_failures": 0,
+      "unexpected_failures": 0
+    },
+    "missing_accents": {
+      "correct": 5,
+      "total": 5,
+      "accuracy": 1.0,
+      "known_failures": 0,
+      "unexpected_failures": 0
+    },
+    "off_topic": {
+      "correct": 4,
+      "total": 4,
+      "accuracy": 1.0,
+      "known_failures": 0,
+      "unexpected_failures": 0
+    },
+    "repetition": {
+      "correct": 1,
+      "total": 3,
+      "accuracy": 0.333,
+      "known_failures": 0,
+      "unexpected_failures": 2
+    },
+    "sarcasm": {
+      "correct": 5,
+      "total": 5,
+      "accuracy": 1.0,
+      "known_failures": 0,
+      "unexpected_failures": 0
+    },
+    "slang_abbrev": {
+      "correct": 3,
+      "total": 6,
+      "accuracy": 0.5,
+      "known_failures": 0,
+      "unexpected_failures": 3
+    },
+    "typos": {
+      "correct": 5,
+      "total": 5,
+      "accuracy": 1.0,
+      "known_failures": 0,
+      "unexpected_failures": 0
+    }
+  }
+}
