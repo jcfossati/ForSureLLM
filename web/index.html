@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ForSureLLM — yes/no/unknown classifier</title>
+<style>
+  :root {
+    --bg: #0e0f13;
+    --surface: #171922;
+    --border: #262937;
+    --text: #e5e7ee;
+    --muted: #8b90a5;
+    --yes: #22c55e;
+    --no: #ef4444;
+    --unknown: #eab308;
+    --accent: #6366f1;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  .container { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+  header { margin-bottom: 40px; }
+  h1 { font-size: 24px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); font-size: 13px; }
+  .input-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .input-row { display: flex; gap: 8px; }
+  input[type="text"] {
+    flex: 1; background: #0b0c10; color: var(--text); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px 14px; font-size: 15px; outline: none;
+    transition: border-color 0.15s;
+  }
+  input[type="text"]:focus { border-color: var(--accent); }
+  .threshold-row { display: flex; align-items: center; gap: 12px; margin-top: 14px; color: var(--muted); font-size: 13px; }
+  input[type="range"] { flex: 1; accent-color: var(--accent); }
+  .threshold-value { min-width: 40px; text-align: right; font-variant-numeric: tabular-nums; color: var(--text); }
+  .result { margin-top: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; min-height: 120px; }
+  .result.empty { color: var(--muted); font-size: 13px; display: flex; align-items: center; justify-content: center; min-height: 160px; }
+  .result-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 18px; }
+  .label-big { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; }
+  .label-big.yes { color: var(--yes); }
+  .label-big.no { color: var(--no); }
+  .label-big.unknown { color: var(--unknown); }
+  .conf { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+  .bars { display: flex; flex-direction: column; gap: 10px; }
+  .bar-row { display: grid; grid-template-columns: 72px 1fr 56px; gap: 12px; align-items: center; }
+  .bar-label { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .bar-track { height: 10px; background: #0b0c10; border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.2s ease; }
+  .bar-fill.yes { background: var(--yes); }
+  .bar-fill.no { background: var(--no); }
+  .bar-fill.unknown { background: var(--unknown); }
+  .bar-val { font-size: 13px; font-variant-numeric: tabular-nums; color: var(--text); text-align: right; }
+
+  .tokens { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .tokens-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .tokens-list { display: flex; flex-wrap: wrap; gap: 4px; }
+  .tok { background: #0b0c10; border: 1px solid var(--border); border-radius: 4px; padding: 2px 6px; font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 11px; color: var(--muted); }
+
+  .presets { margin-top: 24px; }
+  .presets-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .preset-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .preset { background: var(--surface); border: 1px solid var(--border); color: var(--muted); padding: 6px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.12s; }
+  .preset:hover { border-color: var(--accent); color: var(--text); }
+
+  .meta { margin-top: 12px; color: var(--muted); font-size: 11px; text-align: right; font-variant-numeric: tabular-nums; }
+  .error { color: var(--no); font-size: 13px; margin-top: 12px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>ForSureLLM</h1>
+    <div class="sub">yes / no / unknown classifier · EN + FR · local ONNX int8</div>
+  </header>
+
+  <div class="input-card">
+    <div class="input-row">
+      <input type="text" id="phrase" placeholder="tape une phrase… (ex: carrément, laisse tomber, il pleut dehors)" autofocus autocomplete="off" />
+    </div>
+    <div class="threshold-row">
+      <span>threshold</span>
+      <input type="range" id="threshold" min="0" max="1" step="0.01" value="0" />
+      <span class="threshold-value" id="threshold-value">0.00</span>
+    </div>
+  </div>
+
+  <div class="presets">
+    <div class="presets-label">exemples</div>
+    <div class="preset-row" id="presets"></div>
+  </div>
+
+  <div class="result empty" id="result">Tape une phrase pour la classifier.</div>
+</div>
+
+<script>
+const PRESETS = [
+  "carrément", "absolutely", "laisse tomber", "no way",
+  "peut-être", "maybe", "bof", "je sais pas trop",
+  "il pleut dehors", "what time is it",
+  "oui mais non", "yeah right", "bien sûr, comme toujours...",
+  "pourquoi pas", "ouais", "nope", "tkt",
+];
+
+const input = document.getElementById("phrase");
+const threshold = document.getElementById("threshold");
+const thresholdValue = document.getElementById("threshold-value");
+const result = document.getElementById("result");
+const presetsEl = document.getElementById("presets");
+
+PRESETS.forEach(p => {
+  const b = document.createElement("button");
+  b.className = "preset";
+  b.textContent = p;
+  b.onclick = () => { input.value = p; classify(); };
+  presetsEl.appendChild(b);
+});
+
+let debounceTimer = null;
+input.addEventListener("input", () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(classify, 150);
+});
+threshold.addEventListener("input", () => {
+  thresholdValue.textContent = parseFloat(threshold.value).toFixed(2);
+  classify();
+});
+
+async function classify() {
+  const phrase = input.value.trim();
+  if (!phrase) {
+    result.className = "result empty";
+    result.innerHTML = "Tape une phrase pour la classifier.";
+    return;
+  }
+  const t0 = performance.now();
+  try {
+    const r = await fetch("/classify", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ phrase, threshold: parseFloat(threshold.value) }),
+    });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const data = await r.json();
+    render(data, performance.now() - t0);
+  } catch (e) {
+    result.className = "result";
+    result.innerHTML = `<div class="error">Erreur: ${e.message}</div>`;
+  }
+}
+
+function render(data, latencyMs) {
+  const { label, confidence, probabilities, tokens } = data;
+  const order = ["yes", "no", "unknown"];
+  const bars = order.map(cls => {
+    const p = probabilities[cls];
+    return `
+      <div class="bar-row">
+        <div class="bar-label">${cls}</div>
+        <div class="bar-track"><div class="bar-fill ${cls}" style="width:${(p*100).toFixed(1)}%"></div></div>
+        <div class="bar-val">${p.toFixed(3)}</div>
+      </div>`;
+  }).join("");
+  const tokenTags = tokens.map(t => `<span class="tok">${escapeHtml(t)}</span>`).join("");
+  result.className = "result";
+  result.innerHTML = `
+    <div class="result-header">
+      <div class="label-big ${label}">${label.toUpperCase()}</div>
+      <div class="conf">conf ${confidence.toFixed(3)}</div>
+    </div>
+    <div class="bars">${bars}</div>
+    <div class="tokens">
+      <div class="tokens-label">tokens (${tokens.length})</div>
+      <div class="tokens-list">${tokenTags}</div>
+    </div>
+    <div class="meta">latence client+server : ${latencyMs.toFixed(1)} ms</div>
+  `;
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+}
+</script>
+</body>
+</html>

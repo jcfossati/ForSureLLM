@@ -1,0 +1,9 @@
+{
+  "classes": [
+    "yes",
+    "no",
+    "unknown"
+  ],
+  "max_length": 64,
+  "temperature": 0.6894898414611816
+}
