@@ -19,7 +19,7 @@ def _load():
     tokenizer = Tokenizer.from_file(str(_MODEL_DIR / "tokenizer.json"))
     tokenizer.enable_truncation(max_length=cfg["max_length"])
     session = ort.InferenceSession(
-        str(_MODEL_DIR / "yesno-int8.onnx"),
+        str(_MODEL_DIR / "forsurellm-int8.onnx"),
         providers=["CPUExecutionProvider"],
     )
     input_names = {i.name for i in session.get_inputs()}

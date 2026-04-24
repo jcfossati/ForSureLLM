@@ -23,7 +23,7 @@ Adversarial eval on 63 trap phrases (sarcasm, abbreviations, missing accents, re
 ## Usage
 
 ```python
-from yesno import classify
+from forsurellm import classify
 
 classify("absolutely")                # ("yes", 0.975)
 classify("no way")                    # ("no", 0.980)
@@ -47,7 +47,7 @@ classify("ok", threshold=0.95)        # ("yes" if >0.95, else "unknown")
 pip install -e .
 ```
 
-Runtime deps: `onnxruntime`, `tokenizers`, `numpy`. The tokenizer and config are bundled in `yesno/models/`. The `yesno-int8.onnx` file (113 MB) is **not** committed (GitHub's 100 MB limit) — you must either fetch it separately or rebuild it via the "Reproducing training" section below.
+Runtime deps: `onnxruntime`, `tokenizers`, `numpy`. The tokenizer and config are bundled in `forsurellm/models/`. The `forsurellm-int8.onnx` file (113 MB) is **not** committed (GitHub's 100 MB limit) — you must either fetch it separately or rebuild it via the "Reproducing training" section below.
 
 ## Web test interface
 
@@ -76,7 +76,7 @@ calibrate.py             (post-hoc temperature scaling via LBFGS on val set)
         │
 export.py                (ONNX + dynamic int8 + CPU benchmark + T in config.json)
         │
-yesno/classifier.py      (runtime: onnxruntime + tokenizers + calibrated soft probs)
+forsurellm/classifier.py      (runtime: onnxruntime + tokenizers + calibrated soft probs)
 ```
 
 ## Reproducing training
@@ -245,11 +245,11 @@ ForSureLLM/
 │   ├── eval.py                 # curated adversarial eval
 │   ├── repl.py                 # interactive terminal REPL
 │   └── server.py               # FastAPI + web interface
-├── yesno/
+├── forsurellm/
 │   ├── __init__.py
 │   ├── classifier.py           # runtime (onnxruntime + tokenizers)
 │   └── models/
-│       ├── yesno-int8.onnx
+│       ├── forsurellm-int8.onnx
 │       ├── tokenizer.json
 │       └── config.json         # classes, max_length, temperature
 ├── web/

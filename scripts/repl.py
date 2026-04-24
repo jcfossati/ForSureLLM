@@ -15,7 +15,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from yesno import classify
+from forsurellm import classify
 
 
 BAR_WIDTH = 20
@@ -53,7 +53,7 @@ def main() -> None:
 
         label, conf = classify(line, threshold=threshold)
 
-        from yesno.classifier import _load, _softmax
+        from forsurellm.classifier import _load, _softmax
         import numpy as np
         tokenizer, session, classes, input_names = _load()
         enc = tokenizer.encode(line)

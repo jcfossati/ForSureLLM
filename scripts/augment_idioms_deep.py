@@ -24,7 +24,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from yesno.llm import LLMClient
+from forsurellm.llm import LLMClient
 
 PER_IDIOM = 20
 

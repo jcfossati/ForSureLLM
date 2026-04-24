@@ -208,7 +208,7 @@ __marimo__/
 
 # Project data & models
 data/**/*.jsonl
-yesno/models/*.onnx
+forsurellm/models/*.onnx
 checkpoints/
 
 # Claude Code local state

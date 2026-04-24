@@ -39,9 +39,9 @@ Temperature scaling post-hoc : LBFGS sur NLL (hard labels) pour trouver T optima
 ### 7. Export (`scripts/export.py`)
 ONNX via `optimum.exporters.onnx` → quantization int8 dynamique (avx512-vnni) → benchmark CPU. Temperature injectée dans `config.json`.
 
-### 8. API d'usage (`yesno/`)
+### 8. API d'usage (`forsurellm/`)
 ```python
-from yesno import classify
+from forsurellm import classify
 classify("carrément")           # ("yes", 0.98)
 classify("laisse tomber")       # ("no", 0.98)
 classify("il pleut")            # ("unknown", 0.97)
@@ -64,7 +64,7 @@ ForSureLLM/
 │   ├── labeled/          # {en,fr}.jsonl + idioms_deep.jsonl (Haiku label)
 │   └── splits/           # train/val/test.jsonl stratifiés
 ├── scripts/              # pipeline reproductible
-├── yesno/                # package runtime (classifier.py + ONNX int8)
+├── forsurellm/                # package runtime (classifier.py + ONNX int8)
 ├── web/                  # interface HTML de test (fastapi)
 ├── tests/                # tests unitaires + eval adversarial
 └── checkpoints/          # HF + ONNX fp32/int8 (gitignored)
