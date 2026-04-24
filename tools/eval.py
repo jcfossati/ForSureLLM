@@ -1,10 +1,10 @@
 """Évalue le classifier sur l'eval set adversarial.
 
 Usage:
-    python scripts/eval.py
+    python tools/eval.py
 
-Input  : tests/eval_adversarial.jsonl
-Output : rapport console + tests/eval_report.json
+Input  : evals/adversarial.jsonl
+Output : rapport console + evals/last_report.json
 
 Chaque phrase a une catégorie ({canonical, hedging, missing_accents, typos,
 slang_abbrev, degenerate, repetition, sarcasm, compound, off_topic, interjection}).
@@ -22,8 +22,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from forsurellm import classify
 
-EVAL_PATH = Path(__file__).parent.parent / "tests" / "eval_adversarial.jsonl"
-REPORT_PATH = Path(__file__).parent.parent / "tests" / "eval_report.json"
+EVAL_PATH = Path(__file__).parent.parent / "evals" / "adversarial.jsonl"
+REPORT_PATH = Path(__file__).parent.parent / "evals" / "last_report.json"
 
 
 def main() -> None:

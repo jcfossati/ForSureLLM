@@ -53,7 +53,7 @@ Runtime deps: `onnxruntime`, `tokenizers`, `numpy`. The tokenizer and config are
 
 ```bash
 pip install -e ".[web]"    # fastapi + uvicorn
-python scripts/server.py
+python tools/server.py
 ```
 
 Then open `http://localhost:8000` — live input, threshold slider, distribution bars, token visualization, 17 clickable presets.
@@ -85,16 +85,16 @@ forsurellm/classifier.py      (runtime: onnxruntime + tokenizers + calibrated so
 pip install -e ".[train]"
 cp .env.example .env   # fill in the API key of your chosen provider
 
-python scripts/generate_dataset.py --target-per-lang 5000
-python scripts/augment_idioms.py
-python scripts/augment_idioms_deep.py
-python scripts/label_dataset.py
-python scripts/clean_dataset.py
-python scripts/train.py --epochs 8
-python scripts/calibrate.py
-python scripts/export.py
+python training/generate.py --target-per-lang 5000
+python training/augment_idioms.py
+python training/augment_idioms_deep.py
+python training/label.py
+python training/clean.py
+python training/train.py --epochs 8
+python training/calibrate.py
+python training/export.py
 pytest tests/
-python scripts/eval.py
+python tools/eval.py
 ```
 
 Observed API cost (default Anthropic setup): ~$15 (Sonnet generation+augmentation + Haiku labeling).
@@ -176,8 +176,8 @@ Anthropic prompt caching is automatically enabled when the provider is Anthropic
 
 ```bash
 pytest tests/                      # 37 unit tests (API, EN/FR hard cases, threshold, perf)
-python scripts/eval.py             # adversarial eval on 63 curated phrases
-python scripts/repl.py             # interactive REPL with visualization
+python tools/eval.py             # adversarial eval on 63 curated phrases
+python tools/repl.py             # interactive REPL with visualization
 ```
 
 ## Calibration & threshold
@@ -229,34 +229,49 @@ else:
 
 ```
 ForSureLLM/
-├── data/
-│   ├── raw/              # generated phrases (Sonnet)
-│   ├── labeled/          # labeled phrases (Haiku) + idioms_deep (Sonnet direct)
-│   └── splits/           # stratified train/val/test
-├── scripts/
-│   ├── generate_dataset.py     # broad EN+FR generation
-│   ├── augment_idioms.py       # thematic idioms (breadth)
-│   ├── augment_idioms_deep.py  # key idioms (depth, hardcoded labels)
-│   ├── label_dataset.py        # Haiku soft labels
-│   ├── clean_dataset.py        # drop pure-noise unknowns
-│   ├── train.py                # KL-div distillation
-│   ├── calibrate.py            # temperature scaling
-│   ├── export.py               # ONNX int8 + benchmark
-│   ├── eval.py                 # curated adversarial eval
-│   ├── repl.py                 # interactive terminal REPL
-│   └── server.py               # FastAPI + web interface
-├── forsurellm/
+├── forsurellm/                    # distributable runtime package
 │   ├── __init__.py
-│   ├── classifier.py           # runtime (onnxruntime + tokenizers)
+│   ├── classifier.py              # inference (onnxruntime + tokenizers)
 │   └── models/
-│       ├── forsurellm-int8.onnx
+│       ├── forsurellm-int8.onnx   # (gitignored, 113 MB)
 │       ├── tokenizer.json
-│       └── config.json         # classes, max_length, temperature
+│       └── config.json            # classes, max_length, temperature
+│
+├── training/                      # distillation pipeline
+│   ├── llm_client.py              # multi-provider LiteLLM wrapper
+│   ├── generate.py                # broad EN+FR generation
+│   ├── augment_idioms.py          # breadth idioms (60 seeds)
+│   ├── augment_idioms_deep.py     # depth idioms (102 × 20)
+│   ├── label.py                   # soft labels
+│   ├── clean.py                   # drop pure-noise unknowns
+│   ├── train.py                   # KL-div distillation
+│   ├── calibrate.py               # temperature scaling
+│   └── export.py                  # ONNX int8 + benchmark
+│
+├── tools/                         # standalone utilities
+│   ├── repl.py                    # interactive terminal REPL
+│   ├── eval.py                    # curated adversarial eval
+│   └── server.py                  # FastAPI + web interface
+│
 ├── web/
-│   └── index.html              # test interface
+│   └── index.html                 # test interface
+│
+├── data/                          # datasets (content gitignored)
+│   ├── raw/                       # generated phrases
+│   ├── labeled/                   # labeled phrases
+│   └── splits/                    # stratified train/val/test
+│
+├── evals/
+│   ├── adversarial.jsonl          # 63 curated trap phrases
+│   └── last_report.json           # latest eval report
+│
 ├── tests/
-│   ├── test_classifier.py      # 37 unit tests
-│   ├── eval_adversarial.jsonl  # 63 curated trap phrases
-│   └── eval_report.json        # latest report
-└── checkpoints/                # gitignored
+│   └── test_classifier.py         # 37 unit tests
+│
+├── docs/
+│   └── brief.md                   # project brief
+│
+├── llm_config.yaml                # LLM model config (editable)
+├── .env.example                   # API keys template
+└── checkpoints/                   # training artifacts (gitignored)
 ```

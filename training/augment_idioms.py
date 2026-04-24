@@ -21,7 +21,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from forsurellm.llm import LLMClient
+from training.llm_client import LLMClient
 
 PER_SEED = 30
 
