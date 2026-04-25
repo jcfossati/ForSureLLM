@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 from functools import lru_cache
 from pathlib import Path
 
@@ -10,6 +11,13 @@ import onnxruntime as ort
 from tokenizers import Tokenizer
 
 _MODEL_DIR = Path(__file__).parent / "models"
+
+# Pré-processeur : une phrase sans aucune lettre (ex: "!", "?", "...", "123",
+# espaces seuls, vide) ne peut pas porter d'intention yes/no - on court-circuite
+# le modèle et on retourne `unknown` avec confiance maximale. Évite des
+# régressions du modèle sur des cas dégénérés (cf. eval adversarial catégorie
+# `degenerate`).
+_HAS_LETTER_RE = re.compile(r"[^\W\d_]", re.UNICODE)
 
 
 @lru_cache(maxsize=1)
@@ -43,6 +51,10 @@ def classify(phrase: str, threshold: float = 0.0) -> tuple[str, float]:
     Returns:
         (label, confidence) avec label ∈ {"yes", "no", "unknown"} et confidence ∈ [0, 1].
     """
+    # Pré-processeur déterministe - cf. _HAS_LETTER_RE.
+    if not _HAS_LETTER_RE.search(phrase or ""):
+        return "unknown", 1.0
+
     tokenizer, session, classes, input_names, temperature = _load()
     enc = tokenizer.encode(phrase)
     ids = np.array([enc.ids], dtype=np.int64)
