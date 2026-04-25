@@ -1,9 +1,9 @@
 {
   "total": 63,
-  "correct": 56,
-  "accuracy": 0.889,
+  "correct": 57,
+  "accuracy": 0.905,
   "known_failures": 0,
-  "unexpected_failures": 7,
+  "unexpected_failures": 6,
   "by_category": {
     "canonical": {
       "correct": 10,
@@ -20,11 +20,11 @@
       "unexpected_failures": 1
     },
     "degenerate": {
-      "correct": 3,
+      "correct": 4,
       "total": 4,
-      "accuracy": 0.75,
+      "accuracy": 1.0,
       "known_failures": 0,
-      "unexpected_failures": 1
+      "unexpected_failures": 0
     },
     "hedging": {
       "correct": 8,
