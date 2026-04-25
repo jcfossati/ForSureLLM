@@ -1,9 +1,9 @@
 {
   "total": 63,
-  "correct": 57,
-  "accuracy": 0.905,
+  "correct": 61,
+  "accuracy": 0.968,
   "known_failures": 0,
-  "unexpected_failures": 6,
+  "unexpected_failures": 2,
   "by_category": {
     "canonical": {
       "correct": 10,
@@ -13,11 +13,11 @@
       "unexpected_failures": 0
     },
     "compound": {
-      "correct": 6,
+      "correct": 7,
       "total": 7,
-      "accuracy": 0.857,
+      "accuracy": 1.0,
       "known_failures": 0,
-      "unexpected_failures": 1
+      "unexpected_failures": 0
     },
     "degenerate": {
       "correct": 4,
@@ -55,11 +55,11 @@
       "unexpected_failures": 0
     },
     "repetition": {
-      "correct": 1,
+      "correct": 3,
       "total": 3,
-      "accuracy": 0.333,
+      "accuracy": 1.0,
       "known_failures": 0,
-      "unexpected_failures": 2
+      "unexpected_failures": 0
     },
     "sarcasm": {
       "correct": 5,
@@ -69,11 +69,11 @@
       "unexpected_failures": 0
     },
     "slang_abbrev": {
-      "correct": 3,
+      "correct": 4,
       "total": 6,
-      "accuracy": 0.5,
+      "accuracy": 0.667,
       "known_failures": 0,
-      "unexpected_failures": 3
+      "unexpected_failures": 2
     },
     "typos": {
       "correct": 5,

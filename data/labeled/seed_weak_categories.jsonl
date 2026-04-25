@@ -1,0 +1,63 @@
+{"phrase": "yes yes yes", "lang": "en", "labels": {"yes": 0.94, "no": 0.02, "unknown": 0.04}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_yes"}
+{"phrase": "yes yes", "lang": "en", "labels": {"yes": 0.92, "no": 0.03, "unknown": 0.05}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_yes"}
+{"phrase": "yeah yeah yeah", "lang": "en", "labels": {"yes": 0.92, "no": 0.04, "unknown": 0.04}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_yes"}
+{"phrase": "yeah yeah", "lang": "en", "labels": {"yes": 0.9, "no": 0.05, "unknown": 0.05}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_yes"}
+{"phrase": "yep yep yep", "lang": "en", "labels": {"yes": 0.93, "no": 0.03, "unknown": 0.04}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_yes"}
+{"phrase": "okay okay okay", "lang": "en", "labels": {"yes": 0.9, "no": 0.04, "unknown": 0.06}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_yes"}
+{"phrase": "sure sure", "lang": "en", "labels": {"yes": 0.88, "no": 0.05, "unknown": 0.07}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_yes"}
+{"phrase": "definitely definitely", "lang": "en", "labels": {"yes": 0.93, "no": 0.02, "unknown": 0.05}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_yes"}
+{"phrase": "oui oui oui", "lang": "fr", "labels": {"yes": 0.94, "no": 0.02, "unknown": 0.04}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_yes"}
+{"phrase": "oui oui", "lang": "fr", "labels": {"yes": 0.92, "no": 0.03, "unknown": 0.05}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_yes"}
+{"phrase": "ouais ouais ouais", "lang": "fr", "labels": {"yes": 0.92, "no": 0.04, "unknown": 0.04}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_yes"}
+{"phrase": "ouais ouais", "lang": "fr", "labels": {"yes": 0.9, "no": 0.05, "unknown": 0.05}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_yes"}
+{"phrase": "carrément carrément", "lang": "fr", "labels": {"yes": 0.93, "no": 0.03, "unknown": 0.04}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_yes"}
+{"phrase": "d'accord d'accord", "lang": "fr", "labels": {"yes": 0.9, "no": 0.04, "unknown": 0.06}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_yes"}
+{"phrase": "voilà voilà", "lang": "fr", "labels": {"yes": 0.85, "no": 0.05, "unknown": 0.1}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_yes"}
+{"phrase": "bien sûr bien sûr", "lang": "fr", "labels": {"yes": 0.92, "no": 0.03, "unknown": 0.05}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_yes"}
+{"phrase": "no no no", "lang": "en", "labels": {"yes": 0.02, "no": 0.94, "unknown": 0.04}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_no"}
+{"phrase": "no no", "lang": "en", "labels": {"yes": 0.03, "no": 0.92, "unknown": 0.05}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_no"}
+{"phrase": "nope nope nope", "lang": "en", "labels": {"yes": 0.03, "no": 0.93, "unknown": 0.04}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_no"}
+{"phrase": "nah nah nah", "lang": "en", "labels": {"yes": 0.03, "no": 0.92, "unknown": 0.05}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_no"}
+{"phrase": "never never", "lang": "en", "labels": {"yes": 0.02, "no": 0.92, "unknown": 0.06}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_no"}
+{"phrase": "absolutely not absolutely not", "lang": "en", "labels": {"yes": 0.02, "no": 0.93, "unknown": 0.05}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_no"}
+{"phrase": "non non non", "lang": "fr", "labels": {"yes": 0.02, "no": 0.94, "unknown": 0.04}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_no"}
+{"phrase": "non non", "lang": "fr", "labels": {"yes": 0.03, "no": 0.92, "unknown": 0.05}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_no"}
+{"phrase": "nan nan nan", "lang": "fr", "labels": {"yes": 0.03, "no": 0.92, "unknown": 0.05}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_no"}
+{"phrase": "nan nan", "lang": "fr", "labels": {"yes": 0.04, "no": 0.9, "unknown": 0.06}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_no"}
+{"phrase": "pas du tout pas du tout", "lang": "fr", "labels": {"yes": 0.02, "no": 0.93, "unknown": 0.05}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_no"}
+{"phrase": "jamais jamais", "lang": "fr", "labels": {"yes": 0.02, "no": 0.92, "unknown": 0.06}, "teacher": "sonnet_hardcoded", "source_idiom": "repetition_no"}
+{"phrase": "yes and no", "lang": "en", "labels": {"yes": 0.07, "no": 0.07, "unknown": 0.86}, "teacher": "sonnet_hardcoded", "source_idiom": "ambivalence_x_and_y"}
+{"phrase": "no and yes", "lang": "en", "labels": {"yes": 0.07, "no": 0.07, "unknown": 0.86}, "teacher": "sonnet_hardcoded", "source_idiom": "ambivalence_x_and_y"}
+{"phrase": "yes but no", "lang": "en", "labels": {"yes": 0.1, "no": 0.15, "unknown": 0.75}, "teacher": "sonnet_hardcoded", "source_idiom": "ambivalence_x_and_y"}
+{"phrase": "well, yes and no", "lang": "en", "labels": {"yes": 0.08, "no": 0.08, "unknown": 0.84}, "teacher": "sonnet_hardcoded", "source_idiom": "ambivalence_x_and_y"}
+{"phrase": "maybe yes, maybe no", "lang": "en", "labels": {"yes": 0.08, "no": 0.08, "unknown": 0.84}, "teacher": "sonnet_hardcoded", "source_idiom": "ambivalence_x_and_y"}
+{"phrase": "kind of yes, kind of no", "lang": "en", "labels": {"yes": 0.1, "no": 0.1, "unknown": 0.8}, "teacher": "sonnet_hardcoded", "source_idiom": "ambivalence_x_and_y"}
+{"phrase": "it's both yes and no", "lang": "en", "labels": {"yes": 0.1, "no": 0.1, "unknown": 0.8}, "teacher": "sonnet_hardcoded", "source_idiom": "ambivalence_x_and_y"}
+{"phrase": "oui et non", "lang": "fr", "labels": {"yes": 0.07, "no": 0.07, "unknown": 0.86}, "teacher": "sonnet_hardcoded", "source_idiom": "ambivalence_x_and_y"}
+{"phrase": "non et oui", "lang": "fr", "labels": {"yes": 0.07, "no": 0.07, "unknown": 0.86}, "teacher": "sonnet_hardcoded", "source_idiom": "ambivalence_x_and_y"}
+{"phrase": "oui mais non", "lang": "fr", "labels": {"yes": 0.1, "no": 0.15, "unknown": 0.75}, "teacher": "sonnet_hardcoded", "source_idiom": "ambivalence_x_and_y"}
+{"phrase": "non mais oui", "lang": "fr", "labels": {"yes": 0.15, "no": 0.1, "unknown": 0.75}, "teacher": "sonnet_hardcoded", "source_idiom": "ambivalence_x_and_y"}
+{"phrase": "ben oui et non", "lang": "fr", "labels": {"yes": 0.08, "no": 0.08, "unknown": 0.84}, "teacher": "sonnet_hardcoded", "source_idiom": "ambivalence_x_and_y"}
+{"phrase": "oui et non en même temps", "lang": "fr", "labels": {"yes": 0.07, "no": 0.07, "unknown": 0.86}, "teacher": "sonnet_hardcoded", "source_idiom": "ambivalence_x_and_y"}
+{"phrase": "peut-être oui peut-être non", "lang": "fr", "labels": {"yes": 0.08, "no": 0.08, "unknown": 0.84}, "teacher": "sonnet_hardcoded", "source_idiom": "ambivalence_x_and_y"}
+{"phrase": "c'est oui et non", "lang": "fr", "labels": {"yes": 0.07, "no": 0.07, "unknown": 0.86}, "teacher": "sonnet_hardcoded", "source_idiom": "ambivalence_x_and_y"}
+{"phrase": "lol", "lang": "en", "labels": {"yes": 0.1, "no": 0.1, "unknown": 0.8}, "teacher": "sonnet_hardcoded", "source_idiom": "humor_deflection"}
+{"phrase": "lmao", "lang": "en", "labels": {"yes": 0.1, "no": 0.1, "unknown": 0.8}, "teacher": "sonnet_hardcoded", "source_idiom": "humor_deflection"}
+{"phrase": "rofl", "lang": "en", "labels": {"yes": 0.1, "no": 0.1, "unknown": 0.8}, "teacher": "sonnet_hardcoded", "source_idiom": "humor_deflection"}
+{"phrase": "lololol", "lang": "en", "labels": {"yes": 0.1, "no": 0.1, "unknown": 0.8}, "teacher": "sonnet_hardcoded", "source_idiom": "humor_deflection"}
+{"phrase": "lol no", "lang": "en", "labels": {"yes": 0.05, "no": 0.85, "unknown": 0.1}, "teacher": "sonnet_hardcoded", "source_idiom": "humor_deflection"}
+{"phrase": "lmao no", "lang": "en", "labels": {"yes": 0.05, "no": 0.85, "unknown": 0.1}, "teacher": "sonnet_hardcoded", "source_idiom": "humor_deflection"}
+{"phrase": "haha no", "lang": "en", "labels": {"yes": 0.05, "no": 0.85, "unknown": 0.1}, "teacher": "sonnet_hardcoded", "source_idiom": "humor_deflection"}
+{"phrase": "lol yes", "lang": "en", "labels": {"yes": 0.85, "no": 0.05, "unknown": 0.1}, "teacher": "sonnet_hardcoded", "source_idiom": "humor_deflection"}
+{"phrase": "xd", "lang": "en", "labels": {"yes": 0.1, "no": 0.1, "unknown": 0.8}, "teacher": "sonnet_hardcoded", "source_idiom": "humor_deflection"}
+{"phrase": "kek", "lang": "en", "labels": {"yes": 0.1, "no": 0.1, "unknown": 0.8}, "teacher": "sonnet_hardcoded", "source_idiom": "humor_deflection"}
+{"phrase": "lel", "lang": "en", "labels": {"yes": 0.1, "no": 0.1, "unknown": 0.8}, "teacher": "sonnet_hardcoded", "source_idiom": "humor_deflection"}
+{"phrase": "mdr", "lang": "fr", "labels": {"yes": 0.1, "no": 0.1, "unknown": 0.8}, "teacher": "sonnet_hardcoded", "source_idiom": "humor_deflection"}
+{"phrase": "mdrr", "lang": "fr", "labels": {"yes": 0.1, "no": 0.1, "unknown": 0.8}, "teacher": "sonnet_hardcoded", "source_idiom": "humor_deflection"}
+{"phrase": "mdrrr", "lang": "fr", "labels": {"yes": 0.1, "no": 0.1, "unknown": 0.8}, "teacher": "sonnet_hardcoded", "source_idiom": "humor_deflection"}
+{"phrase": "ptdr", "lang": "fr", "labels": {"yes": 0.1, "no": 0.1, "unknown": 0.8}, "teacher": "sonnet_hardcoded", "source_idiom": "humor_deflection"}
+{"phrase": "ptdrr", "lang": "fr", "labels": {"yes": 0.1, "no": 0.1, "unknown": 0.8}, "teacher": "sonnet_hardcoded", "source_idiom": "humor_deflection"}
+{"phrase": "lol fr", "lang": "fr", "labels": {"yes": 0.1, "no": 0.1, "unknown": 0.8}, "teacher": "sonnet_hardcoded", "source_idiom": "humor_deflection"}
+{"phrase": "mort de rire", "lang": "fr", "labels": {"yes": 0.1, "no": 0.1, "unknown": 0.8}, "teacher": "sonnet_hardcoded", "source_idiom": "humor_deflection"}
+{"phrase": "mdr non", "lang": "fr", "labels": {"yes": 0.05, "no": 0.85, "unknown": 0.1}, "teacher": "sonnet_hardcoded", "source_idiom": "humor_deflection"}
+{"phrase": "mdr oui", "lang": "fr", "labels": {"yes": 0.85, "no": 0.05, "unknown": 0.1}, "teacher": "sonnet_hardcoded", "source_idiom": "humor_deflection"}

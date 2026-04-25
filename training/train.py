@@ -152,6 +152,9 @@ def main() -> None:
     deep = args.labeled_dir / "idioms_deep.jsonl"
     if deep.exists():
         sources.append(deep)
+    weak = args.labeled_dir / "seed_weak_categories.jsonl"
+    if weak.exists():
+        sources.append(weak)
     rows = load_labeled(sources)
     print(f"[data] {len(rows)} phrases labeled total")
 
