@@ -28,6 +28,11 @@ web = [
 dev = [
     "pytest>=7.0",
 ]
+bench = [
+    "litellm>=1.50",
+    "python-dotenv>=1.0",
+    "sentence-transformers>=2.7",
+]
 
 [build-system]
 requires = ["hatchling"]

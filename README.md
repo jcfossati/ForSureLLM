@@ -180,7 +180,54 @@ Le caching de prompt Anthropic est activé automatiquement quand le provider est
 pytest tests/                      # 37 tests unitaires (API, hard cases EN/FR, threshold, perf)
 python tools/eval.py             # eval adversarial sur 63 phrases curées
 python tools/repl.py             # REPL interactif avec visualisation
+python tools/bench_baselines.py  # comparaison head-to-head (Haiku, cosine, GPT-4o-mini)
 ```
+
+## Benchmark vs baselines
+
+Pour donner un point de comparaison concret, ForSureLLM est mis face à
+deux baselines représentatives sur les **63 phrases adversarial** :
+
+- **Haiku 4.5 zero-shot** (Anthropic, prompt minimal) — un LLM premium qui
+  classe sans entraînement spécifique
+- **Cosine MiniLM-L12** (`paraphrase-multilingual-MiniLM-L12-v2`) — embeddings
+  multilingues sans fine-tune, classification par similarité aux centroïdes
+  de classe
+
+| Classifier | Accuracy | p50 | p95 | Wall time |
+|---|---|---|---|---|
+| **ForSureLLM** (ONNX int8 local) | **88.9 %** | **2 ms** | 7 ms | 0.9 s |
+| Haiku 4.5 zero-shot | 77.8 % | 567 ms | 827 ms | 37 s |
+| Cosine MiniLM-L12 | 68.3 % | 8 ms | 12 ms | 0.6 s |
+
+Détail par catégorie adversarial :
+
+| Classifier | canonical | hedging | sarcasm | typos | missing_accents | compound | degenerate | repetition | slang_abbrev |
+|---|---|---|---|---|---|---|---|---|---|
+| ForSureLLM | 100 % | 100 % | 100 % | 100 % | 100 % | 86 % | 75 % | 33 % | 50 % |
+| Haiku 4.5 | 90 % | 100 % | 40 % | 80 % | 100 % | 71 % | 75 % | 100 % | 50 % |
+| Cosine MiniLM | 90 % | 75 % | 20 % | 80 % | 100 % | 57 % | 0 % | 67 % | 33 % |
+
+**Lecture** : ForSureLLM bat Haiku 4.5 zero-shot de **+11 points absolus**, et
+la baseline cosine de **+20 points**, en tournant **~280× plus vite** sur CPU
+(2 ms vs 567 ms par classification) et sans coût API.
+
+Faiblesses relatives :
+- `repetition` (33 %) : Haiku gère ces cas (« no no no », « yes yes yes »).
+  Pattern probablement gérable par règles ou augmentation de données ciblée.
+- `slang_abbrev` (50 %) : tous les classifiers butent à 50 %. C'est un
+  axe d'amélioration commun, pas un défaut spécifique au modèle.
+
+Pour reproduire :
+
+```bash
+pip install -e ".[bench]"            # litellm, sentence-transformers, python-dotenv
+echo "ANTHROPIC_API_KEY=..." >> .env # pour activer Haiku (sinon skipped)
+python tools/bench_baselines.py
+```
+
+Le rapport détaillé (toutes les prédictions phrase par phrase) est sauvegardé
+dans `evals/bench_baselines.json`.
 
 ## Calibration & seuil
 
