@@ -146,6 +146,40 @@ def test_normalization_stable(phrase, variant):
     assert label_canon == label_var, f"flip: '{phrase}'={label_canon}  '{variant}'={label_var}"
 
 
+# --- Symbolic preprocessor ------------------------------------------------
+
+@pytest.mark.parametrize(
+    "phrase,expected",
+    [
+        ("+1", "yes"),
+        ("-1", "no"),
+        ("100%", "yes"),
+        ("0%", "no"),
+        ("75%", "yes"),
+        ("50%", "unknown"),
+        ("25%", "no"),
+        ("10/10", "yes"),
+        ("20/20", "yes"),
+        ("0/10", "no"),
+        ("5/10", "unknown"),
+        ("18/20", "yes"),
+        ("👍", "yes"),
+        ("👎", "no"),
+        ("💯", "yes"),
+        ("🚫", "no"),
+        ("🤷", "unknown"),
+        ("?", "unknown"),
+        ("??", "unknown"),
+        ("✅", "yes"),
+        ("❌", "no"),
+    ],
+)
+def test_symbolic_tokens(phrase, expected):
+    label, conf = classify(phrase)
+    assert label == expected, f"{phrase!r}: got {label} (conf={conf})"
+    assert conf == 1.0, f"symbolic preprocessor must be deterministic"
+
+
 # --- Performance ----------------------------------------------------------
 
 def test_inference_under_10ms():

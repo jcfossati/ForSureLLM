@@ -212,3 +212,6 @@ checkpoints/
 
 # Claude Code local state
 .claude/
+
+# LLM raw dumps (curated manually then deleted)
+data/symbolic_raw*

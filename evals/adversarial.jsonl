@@ -71,3 +71,74 @@
 {"phrase": "hell no", "lang": "en", "expected": "no", "category": "interjection"}
 {"phrase": "bah ouais", "lang": "fr", "expected": "yes", "category": "interjection"}
 {"phrase": "heck yes", "lang": "en", "expected": "yes", "category": "interjection"}
+
+{"phrase": "yeah ouais grave", "lang": "fr", "expected": "yes", "category": "code_switching"}
+{"phrase": "no merci", "lang": "fr", "expected": "no", "category": "code_switching"}
+{"phrase": "ok fine d'accord", "lang": "fr", "expected": "yes", "category": "code_switching"}
+{"phrase": "hard pass merci", "lang": "fr", "expected": "no", "category": "code_switching"}
+{"phrase": "honnêtement no", "lang": "fr", "expected": "no", "category": "code_switching"}
+{"phrase": "totally d'accord", "lang": "fr", "expected": "yes", "category": "code_switching"}
+{"phrase": "yes mais non", "lang": "fr", "expected": "unknown", "category": "code_switching"}
+
+{"phrase": "no cap", "lang": "en", "expected": "yes", "category": "modern_slang"}
+{"phrase": "deadass yes", "lang": "en", "expected": "yes", "category": "modern_slang"}
+{"phrase": "for real", "lang": "en", "expected": "yes", "category": "modern_slang"}
+{"phrase": "nah bro", "lang": "en", "expected": "no", "category": "modern_slang"}
+{"phrase": "say less", "lang": "en", "expected": "yes", "category": "modern_slang"}
+{"phrase": "fr fr", "lang": "en", "expected": "yes", "category": "modern_slang"}
+{"phrase": "bet", "lang": "en", "expected": "yes", "category": "modern_slang"}
+
+{"phrase": "yes if you insist", "lang": "en", "expected": "yes", "category": "conditional"}
+{"phrase": "no unless you pay me", "lang": "en", "expected": "no", "category": "conditional"}
+{"phrase": "only if X happens first", "lang": "en", "expected": "unknown", "category": "conditional"}
+{"phrase": "ça dépend du contexte", "lang": "fr", "expected": "unknown", "category": "conditional"}
+{"phrase": "yes but only halfway", "lang": "en", "expected": "unknown", "category": "conditional"}
+{"phrase": "non sauf si urgence", "lang": "fr", "expected": "no", "category": "conditional"}
+
+{"phrase": "yes 👍", "lang": "en", "expected": "yes", "category": "emoji_text"}
+{"phrase": "non 🙅", "lang": "fr", "expected": "no", "category": "emoji_text"}
+{"phrase": "ouais 🤝", "lang": "fr", "expected": "yes", "category": "emoji_text"}
+{"phrase": "lol no 😂", "lang": "en", "expected": "no", "category": "emoji_text"}
+{"phrase": "sure 😅", "lang": "en", "expected": "unknown", "category": "emoji_text"}
+
+{"phrase": "as if!", "lang": "en", "expected": "no", "category": "implied_negation"}
+{"phrase": "in your dreams", "lang": "en", "expected": "no", "category": "implied_negation"}
+{"phrase": "tu rêves", "lang": "fr", "expected": "no", "category": "implied_negation"}
+{"phrase": "fat chance", "lang": "en", "expected": "no", "category": "implied_negation"}
+{"phrase": "yeah right", "lang": "en", "expected": "no", "category": "implied_negation"}
+{"phrase": "dans tes rêves", "lang": "fr", "expected": "no", "category": "implied_negation"}
+{"phrase": "tu peux toujours rêver", "lang": "fr", "expected": "no", "category": "implied_negation"}
+
+{"phrase": "duh", "lang": "en", "expected": "yes", "category": "implied_affirmation"}
+{"phrase": "obviously", "lang": "en", "expected": "yes", "category": "implied_affirmation"}
+{"phrase": "et comment !", "lang": "fr", "expected": "yes", "category": "implied_affirmation"}
+{"phrase": "is the pope catholic", "lang": "en", "expected": "yes", "category": "implied_affirmation"}
+{"phrase": "évidemment que oui", "lang": "fr", "expected": "yes", "category": "implied_affirmation"}
+{"phrase": "ça va de soi", "lang": "fr", "expected": "yes", "category": "implied_affirmation"}
+
+{"phrase": "if you don't mind, yes please", "lang": "en", "expected": "yes", "category": "polite_padding"}
+{"phrase": "I'm afraid not", "lang": "en", "expected": "no", "category": "polite_padding"}
+{"phrase": "with respect, no", "lang": "en", "expected": "no", "category": "polite_padding"}
+{"phrase": "je vous prie de m'excuser mais non", "lang": "fr", "expected": "no", "category": "polite_padding"}
+{"phrase": "avec plaisir oui", "lang": "fr", "expected": "yes", "category": "polite_padding"}
+{"phrase": "I would be honored to accept", "lang": "en", "expected": "yes", "category": "polite_padding"}
+
+{"phrase": "fine, whatever, yes", "lang": "en", "expected": "yes", "category": "resignation"}
+{"phrase": "ugh ok", "lang": "en", "expected": "yes", "category": "resignation"}
+{"phrase": "bon d'accord", "lang": "fr", "expected": "yes", "category": "resignation"}
+{"phrase": "if I must", "lang": "en", "expected": "yes", "category": "resignation"}
+{"phrase": "do I have a choice", "lang": "en", "expected": "unknown", "category": "resignation"}
+{"phrase": "bon allez", "lang": "fr", "expected": "yes", "category": "resignation"}
+
+{"phrase": "+1", "lang": "en", "expected": "yes", "category": "symbolic"}
+{"phrase": "-1", "lang": "en", "expected": "no", "category": "symbolic"}
+{"phrase": "100%", "lang": "en", "expected": "yes", "category": "symbolic"}
+{"phrase": "0%", "lang": "en", "expected": "no", "category": "symbolic"}
+{"phrase": "10/10", "lang": "en", "expected": "yes", "category": "symbolic"}
+
+{"phrase": "I don't think so", "lang": "en", "expected": "no", "category": "negated_verb"}
+{"phrase": "I wouldn't say no", "lang": "en", "expected": "yes", "category": "negated_verb"}
+{"phrase": "not a chance", "lang": "en", "expected": "no", "category": "negated_verb"}
+{"phrase": "I'm not against it", "lang": "en", "expected": "yes", "category": "negated_verb"}
+{"phrase": "je ne dis pas non", "lang": "fr", "expected": "yes", "category": "negated_verb"}
+{"phrase": "ce n'est pas un non", "lang": "fr", "expected": "yes", "category": "negated_verb"}

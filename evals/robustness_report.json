@@ -1,27 +1,27 @@
 {
-  "n_phrases": 63,
-  "n_variants": 602,
-  "n_flips": 8,
-  "stability": 0.9867109634551495,
+  "n_phrases": 124,
+  "n_variants": 1227,
+  "n_flips": 51,
+  "stability": 0.9584352078239609,
   "by_transform": {
     "lower": {
       "flips": 0,
-      "total": 3,
+      "total": 11,
       "examples": []
     },
     "upper": {
       "flips": 0,
-      "total": 59,
+      "total": 115,
       "examples": []
     },
     "title": {
       "flips": 0,
-      "total": 59,
+      "total": 115,
       "examples": []
     },
     "trail_excl": {
-      "flips": 2,
-      "total": 62,
+      "flips": 10,
+      "total": 122,
       "examples": [
         {
           "phrase": "yes and no",
@@ -34,29 +34,102 @@
           "variant": "absolutely, I love impossible deadlines!",
           "canonical": "no (0.55)",
           "got": "yes (0.65)"
+        },
+        {
+          "phrase": "yes mais non",
+          "variant": "yes mais non!",
+          "canonical": "yes (0.74)",
+          "got": "no (0.65)"
+        },
+        {
+          "phrase": "if I must",
+          "variant": "if I must!",
+          "canonical": "no (0.66)",
+          "got": "yes (0.94)"
+        },
+        {
+          "phrase": "bon allez",
+          "variant": "bon allez!",
+          "canonical": "yes (0.94)",
+          "got": "no (0.37)"
         }
       ]
     },
     "trail_excl3": {
-      "flips": 1,
-      "total": 63,
+      "flips": 9,
+      "total": 124,
       "examples": [
         {
           "phrase": "absolutely, I love impossible deadlines",
           "variant": "absolutely, I love impossible deadlines!!!",
           "canonical": "no (0.55)",
           "got": "yes (0.66)"
+        },
+        {
+          "phrase": "fr fr",
+          "variant": "fr fr!!!",
+          "canonical": "yes (0.89)",
+          "got": "no (0.94)"
+        },
+        {
+          "phrase": "only if X happens first",
+          "variant": "only if X happens first!!!",
+          "canonical": "no (0.77)",
+          "got": "unknown (0.51)"
+        },
+        {
+          "phrase": "bon allez",
+          "variant": "bon allez!!!",
+          "canonical": "yes (0.94)",
+          "got": "no (0.58)"
+        },
+        {
+          "phrase": "+1",
+          "variant": "+1!!!",
+          "canonical": "yes (1.00)",
+          "got": "unknown (1.00)"
         }
       ]
     },
     "trail_qmark": {
-      "flips": 0,
-      "total": 62,
-      "examples": []
+      "flips": 9,
+      "total": 123,
+      "examples": [
+        {
+          "phrase": "fr fr",
+          "variant": "fr fr?",
+          "canonical": "yes (0.89)",
+          "got": "unknown (0.56)"
+        },
+        {
+          "phrase": "only if X happens first",
+          "variant": "only if X happens first?",
+          "canonical": "no (0.77)",
+          "got": "unknown (0.52)"
+        },
+        {
+          "phrase": "if I must",
+          "variant": "if I must?",
+          "canonical": "no (0.66)",
+          "got": "yes (0.80)"
+        },
+        {
+          "phrase": "bon allez",
+          "variant": "bon allez?",
+          "canonical": "yes (0.94)",
+          "got": "unknown (0.70)"
+        },
+        {
+          "phrase": "+1",
+          "variant": "+1?",
+          "canonical": "yes (1.00)",
+          "got": "unknown (1.00)"
+        }
+      ]
     },
     "trail_dots": {
-      "flips": 2,
-      "total": 61,
+      "flips": 13,
+      "total": 122,
       "examples": [
         {
           "phrase": "bien sur",
@@ -69,12 +142,30 @@
           "variant": "absolutely, I love impossible deadlines...",
           "canonical": "no (0.55)",
           "got": "yes (0.53)"
+        },
+        {
+          "phrase": "yes mais non",
+          "variant": "yes mais non...",
+          "canonical": "yes (0.74)",
+          "got": "no (0.85)"
+        },
+        {
+          "phrase": "fr fr",
+          "variant": "fr fr...",
+          "canonical": "yes (0.89)",
+          "got": "unknown (0.52)"
+        },
+        {
+          "phrase": "bet",
+          "variant": "bet...",
+          "canonical": "yes (0.96)",
+          "got": "unknown (0.80)"
         }
       ]
     },
     "strip_punct": {
-      "flips": 2,
-      "total": 11,
+      "flips": 8,
+      "total": 35,
       "examples": [
         {
           "phrase": "bien entendu, c'est évident",
@@ -87,39 +178,63 @@
           "variant": "Id love to but I cant",
           "canonical": "no (0.85)",
           "got": "yes (0.72)"
+        },
+        {
+          "phrase": "sure 😅",
+          "variant": "sure",
+          "canonical": "no (0.96)",
+          "got": "yes (0.96)"
+        },
+        {
+          "phrase": "+1",
+          "variant": "1",
+          "canonical": "yes (1.00)",
+          "got": "unknown (1.00)"
+        },
+        {
+          "phrase": "-1",
+          "variant": "1",
+          "canonical": "no (1.00)",
+          "got": "unknown (1.00)"
         }
       ]
     },
     "lead_space": {
       "flips": 0,
-      "total": 62,
+      "total": 123,
       "examples": []
     },
     "trail_space": {
       "flips": 0,
-      "total": 62,
+      "total": 123,
       "examples": []
     },
     "double_space": {
       "flips": 0,
-      "total": 32,
+      "total": 85,
       "examples": []
     },
     "no_accent": {
-      "flips": 1,
-      "total": 7,
+      "flips": 2,
+      "total": 14,
       "examples": [
         {
           "phrase": "oui bien sûr, comme toujours...",
           "variant": "oui bien sur, comme toujours...",
           "canonical": "no (0.94)",
           "got": "yes (0.96)"
+        },
+        {
+          "phrase": "tu peux toujours rêver",
+          "variant": "tu peux toujours rever",
+          "canonical": "no (0.81)",
+          "got": "unknown (0.92)"
         }
       ]
     },
     "mixed_case": {
       "flips": 0,
-      "total": 59,
+      "total": 115,
       "examples": []
     }
   },
@@ -203,6 +318,312 @@
           "transform": "strip_punct",
           "variant": "Id love to but I cant",
           "got": "yes"
+        }
+      ]
+    },
+    {
+      "phrase": "yes mais non",
+      "canonical": "yes",
+      "category": "code_switching",
+      "flips": [
+        {
+          "transform": "trail_excl",
+          "variant": "yes mais non!",
+          "got": "no"
+        },
+        {
+          "transform": "trail_dots",
+          "variant": "yes mais non...",
+          "got": "no"
+        }
+      ]
+    },
+    {
+      "phrase": "fr fr",
+      "canonical": "yes",
+      "category": "modern_slang",
+      "flips": [
+        {
+          "transform": "trail_excl3",
+          "variant": "fr fr!!!",
+          "got": "no"
+        },
+        {
+          "transform": "trail_qmark",
+          "variant": "fr fr?",
+          "got": "unknown"
+        },
+        {
+          "transform": "trail_dots",
+          "variant": "fr fr...",
+          "got": "unknown"
+        }
+      ]
+    },
+    {
+      "phrase": "bet",
+      "canonical": "yes",
+      "category": "modern_slang",
+      "flips": [
+        {
+          "transform": "trail_dots",
+          "variant": "bet...",
+          "got": "unknown"
+        }
+      ]
+    },
+    {
+      "phrase": "only if X happens first",
+      "canonical": "no",
+      "category": "conditional",
+      "flips": [
+        {
+          "transform": "trail_excl3",
+          "variant": "only if X happens first!!!",
+          "got": "unknown"
+        },
+        {
+          "transform": "trail_qmark",
+          "variant": "only if X happens first?",
+          "got": "unknown"
+        },
+        {
+          "transform": "trail_dots",
+          "variant": "only if X happens first...",
+          "got": "unknown"
+        }
+      ]
+    },
+    {
+      "phrase": "sure 😅",
+      "canonical": "no",
+      "category": "emoji_text",
+      "flips": [
+        {
+          "transform": "strip_punct",
+          "variant": "sure",
+          "got": "yes"
+        }
+      ]
+    },
+    {
+      "phrase": "tu peux toujours rêver",
+      "canonical": "no",
+      "category": "implied_negation",
+      "flips": [
+        {
+          "transform": "no_accent",
+          "variant": "tu peux toujours rever",
+          "got": "unknown"
+        }
+      ]
+    },
+    {
+      "phrase": "if I must",
+      "canonical": "no",
+      "category": "resignation",
+      "flips": [
+        {
+          "transform": "trail_excl",
+          "variant": "if I must!",
+          "got": "yes"
+        },
+        {
+          "transform": "trail_qmark",
+          "variant": "if I must?",
+          "got": "yes"
+        },
+        {
+          "transform": "trail_dots",
+          "variant": "if I must...",
+          "got": "yes"
+        }
+      ]
+    },
+    {
+      "phrase": "bon allez",
+      "canonical": "yes",
+      "category": "resignation",
+      "flips": [
+        {
+          "transform": "trail_excl",
+          "variant": "bon allez!",
+          "got": "no"
+        },
+        {
+          "transform": "trail_excl3",
+          "variant": "bon allez!!!",
+          "got": "no"
+        },
+        {
+          "transform": "trail_qmark",
+          "variant": "bon allez?",
+          "got": "unknown"
+        },
+        {
+          "transform": "trail_dots",
+          "variant": "bon allez...",
+          "got": "no"
+        }
+      ]
+    },
+    {
+      "phrase": "+1",
+      "canonical": "yes",
+      "category": "symbolic",
+      "flips": [
+        {
+          "transform": "trail_excl",
+          "variant": "+1!",
+          "got": "unknown"
+        },
+        {
+          "transform": "trail_excl3",
+          "variant": "+1!!!",
+          "got": "unknown"
+        },
+        {
+          "transform": "trail_qmark",
+          "variant": "+1?",
+          "got": "unknown"
+        },
+        {
+          "transform": "trail_dots",
+          "variant": "+1...",
+          "got": "unknown"
+        },
+        {
+          "transform": "strip_punct",
+          "variant": "1",
+          "got": "unknown"
+        }
+      ]
+    },
+    {
+      "phrase": "-1",
+      "canonical": "no",
+      "category": "symbolic",
+      "flips": [
+        {
+          "transform": "trail_excl",
+          "variant": "-1!",
+          "got": "unknown"
+        },
+        {
+          "transform": "trail_excl3",
+          "variant": "-1!!!",
+          "got": "unknown"
+        },
+        {
+          "transform": "trail_qmark",
+          "variant": "-1?",
+          "got": "unknown"
+        },
+        {
+          "transform": "trail_dots",
+          "variant": "-1...",
+          "got": "unknown"
+        },
+        {
+          "transform": "strip_punct",
+          "variant": "1",
+          "got": "unknown"
+        }
+      ]
+    },
+    {
+      "phrase": "100%",
+      "canonical": "yes",
+      "category": "symbolic",
+      "flips": [
+        {
+          "transform": "trail_excl",
+          "variant": "100%!",
+          "got": "unknown"
+        },
+        {
+          "transform": "trail_excl3",
+          "variant": "100%!!!",
+          "got": "unknown"
+        },
+        {
+          "transform": "trail_qmark",
+          "variant": "100%?",
+          "got": "unknown"
+        },
+        {
+          "transform": "trail_dots",
+          "variant": "100%...",
+          "got": "unknown"
+        },
+        {
+          "transform": "strip_punct",
+          "variant": "100",
+          "got": "unknown"
+        }
+      ]
+    },
+    {
+      "phrase": "0%",
+      "canonical": "no",
+      "category": "symbolic",
+      "flips": [
+        {
+          "transform": "trail_excl",
+          "variant": "0%!",
+          "got": "unknown"
+        },
+        {
+          "transform": "trail_excl3",
+          "variant": "0%!!!",
+          "got": "unknown"
+        },
+        {
+          "transform": "trail_qmark",
+          "variant": "0%?",
+          "got": "unknown"
+        },
+        {
+          "transform": "trail_dots",
+          "variant": "0%...",
+          "got": "unknown"
+        },
+        {
+          "transform": "strip_punct",
+          "variant": "0",
+          "got": "unknown"
+        }
+      ]
+    },
+    {
+      "phrase": "10/10",
+      "canonical": "yes",
+      "category": "symbolic",
+      "flips": [
+        {
+          "transform": "trail_excl",
+          "variant": "10/10!",
+          "got": "unknown"
+        },
+        {
+          "transform": "trail_excl3",
+          "variant": "10/10!!!",
+          "got": "unknown"
+        },
+        {
+          "transform": "trail_qmark",
+          "variant": "10/10?",
+          "got": "unknown"
+        },
+        {
+          "transform": "trail_dots",
+          "variant": "10/10...",
+          "got": "unknown"
+        },
+        {
+          "transform": "strip_punct",
+          "variant": "1010",
+          "got": "unknown"
         }
       ]
     }
