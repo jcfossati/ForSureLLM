@@ -1,9 +1,9 @@
 {
-  "total": 63,
-  "correct": 63,
-  "accuracy": 1.0,
+  "total": 124,
+  "correct": 118,
+  "accuracy": 0.952,
   "known_failures": 0,
-  "unexpected_failures": 0,
+  "unexpected_failures": 6,
   "by_category": {
     "canonical": {
       "correct": 10,
@@ -12,12 +12,26 @@
       "known_failures": 0,
       "unexpected_failures": 0
     },
+    "code_switching": {
+      "correct": 6,
+      "total": 7,
+      "accuracy": 0.857,
+      "known_failures": 0,
+      "unexpected_failures": 1
+    },
     "compound": {
       "correct": 7,
       "total": 7,
       "accuracy": 1.0,
       "known_failures": 0,
       "unexpected_failures": 0
+    },
+    "conditional": {
+      "correct": 4,
+      "total": 6,
+      "accuracy": 0.667,
+      "known_failures": 0,
+      "unexpected_failures": 2
     },
     "degenerate": {
       "correct": 4,
@@ -26,9 +40,30 @@
       "known_failures": 0,
       "unexpected_failures": 0
     },
+    "emoji_text": {
+      "correct": 4,
+      "total": 5,
+      "accuracy": 0.8,
+      "known_failures": 0,
+      "unexpected_failures": 1
+    },
     "hedging": {
       "correct": 8,
       "total": 8,
+      "accuracy": 1.0,
+      "known_failures": 0,
+      "unexpected_failures": 0
+    },
+    "implied_affirmation": {
+      "correct": 6,
+      "total": 6,
+      "accuracy": 1.0,
+      "known_failures": 0,
+      "unexpected_failures": 0
+    },
+    "implied_negation": {
+      "correct": 7,
+      "total": 7,
       "accuracy": 1.0,
       "known_failures": 0,
       "unexpected_failures": 0
@@ -47,9 +82,30 @@
       "known_failures": 0,
       "unexpected_failures": 0
     },
+    "modern_slang": {
+      "correct": 7,
+      "total": 7,
+      "accuracy": 1.0,
+      "known_failures": 0,
+      "unexpected_failures": 0
+    },
+    "negated_verb": {
+      "correct": 5,
+      "total": 6,
+      "accuracy": 0.833,
+      "known_failures": 0,
+      "unexpected_failures": 1
+    },
     "off_topic": {
       "correct": 4,
       "total": 4,
+      "accuracy": 1.0,
+      "known_failures": 0,
+      "unexpected_failures": 0
+    },
+    "polite_padding": {
+      "correct": 6,
+      "total": 6,
       "accuracy": 1.0,
       "known_failures": 0,
       "unexpected_failures": 0
@@ -61,6 +117,13 @@
       "known_failures": 0,
       "unexpected_failures": 0
     },
+    "resignation": {
+      "correct": 5,
+      "total": 6,
+      "accuracy": 0.833,
+      "known_failures": 0,
+      "unexpected_failures": 1
+    },
     "sarcasm": {
       "correct": 5,
       "total": 5,
@@ -71,6 +134,13 @@
     "slang_abbrev": {
       "correct": 6,
       "total": 6,
+      "accuracy": 1.0,
+      "known_failures": 0,
+      "unexpected_failures": 0
+    },
+    "symbolic": {
+      "correct": 5,
+      "total": 5,
       "accuracy": 1.0,
       "known_failures": 0,
       "unexpected_failures": 0

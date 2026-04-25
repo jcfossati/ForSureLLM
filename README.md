@@ -18,7 +18,7 @@ Destiné à reconnaître l'intention de consentement dans une réponse courte d'
 | Training (GPU) | 2m05 |
 | Inference throughput | ~4000 samp/s (GPU), ~1000 samp/s (CPU) |
 
-Eval adversarial sur 63 phrases-pièges (sarcasme, abbréviations, accents manquants, idiomes régionaux) : **100 %**.
+Eval adversarial sur 124 phrases-pièges (sarcasme, abbréviations, accents manquants, idiomes régionaux, code-switching, slang Gen-Z, conditionnel, emoji, négation/affirmation implicite, politesse, résignation, symbolique) : **95.2 %** (118/124).
 
 ## Usage
 
@@ -187,7 +187,7 @@ python tools/bench_baselines.py  # comparaison head-to-head (Haiku, cosine, GPT-
 ## Benchmark vs baselines
 
 Pour donner un point de comparaison concret, ForSureLLM est mis face à
-deux baselines représentatives sur les **63 phrases adversarial** :
+deux baselines représentatives sur les **124 phrases adversarial** :
 
 - **Haiku 4.5 zero-shot** (Anthropic, prompt minimal) — un LLM premium qui
   classe sans entraînement spécifique
@@ -197,22 +197,28 @@ deux baselines représentatives sur les **63 phrases adversarial** :
 
 | Classifier | Accuracy | p50 | p95 | Wall time |
 |---|---|---|---|---|
-| **ForSureLLM** (ONNX int8 local) | **100 %** | **2.0 ms** | 5.3 ms | 0.9 s |
-| Haiku 4.5 zero-shot | 82.5 % | 631 ms | 1420 ms | 47 s |
-| Cosine MiniLM-L12 | 69.8 % | 7 ms | 10 ms | 0.5 s |
+| **ForSureLLM** (ONNX int8 local) | **95.2 %** | **1.8 ms** | 4.9 ms | 1.0 s |
+| Haiku 4.5 zero-shot | 75.0 % | 602 ms | 1536 ms | 85 s |
+| Cosine MiniLM-L12 | 67.7 % | 8 ms | 10 ms | 1.0 s |
 
-Détail par catégorie adversarial :
-
-| Classifier | canonical | hedging | sarcasm | typos | missing_accents | compound | degenerate | repetition | slang_abbrev | interjection | off_topic |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| ForSureLLM | 100 % | 100 % | 100 % | 100 % | 100 % | 100 % | 100 % | 100 % | 100 % | 100 % | 100 % |
-| Haiku 4.5 | 90 % | 100 % | 40 % | 80 % | 100 % | 71 % | 75 % | 100 % | 50 % | 100 % | 100 % |
-| Cosine MiniLM | 90 % | 75 % | 20 % | 80 % | 100 % | 57 % | 0 % | 67 % | 50 % | 100 % | 100 % |
-
-**Lecture** : ForSureLLM atteint **100 %** sur les 11 catégories adversarial,
-bat Haiku 4.5 zero-shot de **+17.5 points absolus** et la baseline cosine de
-**+30 points**, en tournant **~315× plus vite** sur CPU (2 ms vs 631 ms par
+**Lecture** : sur un bench élargi à 22 catégories (anciennes + nouvelles :
+code-switching, slang Gen-Z, conditionnel, emoji+texte, négation/affirmation
+implicite, politesse, résignation, symbolique), ForSureLLM bat Haiku 4.5
+zero-shot de **+20.2 points absolus** et la baseline cosine de **+27.5
+points**, en tournant **~330× plus vite** sur CPU (1.8 ms vs 602 ms par
 classification) et sans coût API.
+
+Catégories où l'écart vs Haiku est massif (>30 pts) :
+`modern_slang` (100 % vs 43 %), `negated_verb` (83 % vs 17 %), `sarcasm`
+(100 % vs 40 %), `slang_abbrev` (100 % vs 50 %), `symbolic` (100 % vs 40 %),
+`resignation` (83 % vs 33 %).
+
+Régressions résiduelles ForSureLLM (6/124, à attaquer dans des PRs ciblées) :
+- `conditional` (4/6) : `only if X happens first`, `yes but only halfway`
+- `code_switching` (6/7) : `yes mais non` lu comme yes
+- `emoji_text` (4/5) : `sure 😅` (l'emoji incertitude n'est pas lu)
+- `negated_verb` (5/6) : `ce n'est pas un non` (double négation FR)
+- `resignation` (5/6) : `if I must` (yes à contrecœur)
 
 Pour reproduire :
 
