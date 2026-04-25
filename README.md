@@ -4,6 +4,8 @@
 
 Classifier `yes` / `no` / `unknown` distillé EN + FR. Inférence locale sans appel API, ONNX int8 quantizé, ~2.5 ms CPU.
 
+🎯 **Demo en ligne** : [huggingface.co/spaces/jcfossati/ForSureLLM](https://huggingface.co/spaces/jcfossati/ForSureLLM)
+
 Destiné à reconnaître l'intention de consentement dans une réponse courte d'utilisateur (bot, CLI, IVR, automation). L'application hôte maintient l'état de l'action en cours ; le classifier dit seulement si l'utilisateur **adhère**, **refuse**, ou **hésite**.
 
 ## Métriques
