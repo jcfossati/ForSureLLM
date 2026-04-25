@@ -122,6 +122,30 @@ def test_threshold_does_not_override_true_unknown():
     assert label == "unknown"
 
 
+# --- Robustness aux variantes de surface ----------------------------------
+
+@pytest.mark.parametrize(
+    "phrase,variant",
+    [
+        ("oui", "OUI"),
+        ("oui", "oUi"),
+        ("oui", "  oui  "),
+        ("oui", "oui "),  # nbsp
+        ("np", "Np"),
+        ("np", "NP"),
+        ("carrement", "CARREMENT"),
+        ("peut-etre", "PEUT-ETRE"),
+        ("grv", "Grv"),
+        ("ben oui", "ben    oui"),
+    ],
+)
+def test_normalization_stable(phrase, variant):
+    """Casse, espaces multiples et NFC ne doivent pas changer la prédiction."""
+    label_canon, _ = classify(phrase)
+    label_var, _ = classify(variant)
+    assert label_canon == label_var, f"flip: '{phrase}'={label_canon}  '{variant}'={label_var}"
+
+
 # --- Performance ----------------------------------------------------------
 
 def test_inference_under_10ms():

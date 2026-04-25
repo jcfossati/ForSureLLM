@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import re
+import unicodedata
 from functools import lru_cache
 from pathlib import Path
 
@@ -18,6 +19,17 @@ _MODEL_DIR = Path(__file__).parent / "models"
 # régressions du modèle sur des cas dégénérés (cf. eval adversarial catégorie
 # `degenerate`).
 _HAS_LETTER_RE = re.compile(r"[^\W\d_]", re.UNICODE)
+_WS_RE = re.compile(r"\s+")
+
+
+def _normalize(phrase: str) -> str:
+    """Normalise les variantes de surface qui ne portent pas de sens : casse,
+    forme unicode, espaces multiples. Réduit la fragilité aux entrées type
+    `Np`, `PEUT-ETRE`, `oUi`, `ben    oui` (cf. tools/robustness.py).
+    """
+    s = unicodedata.normalize("NFC", phrase)
+    s = _WS_RE.sub(" ", s).strip()
+    return s.lower()
 
 
 @lru_cache(maxsize=1)
@@ -56,7 +68,7 @@ def classify(phrase: str, threshold: float = 0.0) -> tuple[str, float]:
         return "unknown", 1.0
 
     tokenizer, session, classes, input_names, temperature = _load()
-    enc = tokenizer.encode(phrase)
+    enc = tokenizer.encode(_normalize(phrase))
     ids = np.array([enc.ids], dtype=np.int64)
     mask = np.array([enc.attention_mask], dtype=np.int64)
     feeds = {"input_ids": ids, "attention_mask": mask}

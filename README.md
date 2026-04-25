@@ -177,8 +177,9 @@ Le caching de prompt Anthropic est activé automatiquement quand le provider est
 ## Tests & eval
 
 ```bash
-pytest tests/                      # 37 tests unitaires (API, hard cases EN/FR, threshold, perf)
+pytest tests/                      # 47 tests unitaires (API, hard cases EN/FR, threshold, normalisation, perf)
 python tools/eval.py             # eval adversarial sur 63 phrases curées
+python tools/robustness.py       # 602 variantes graphiques (casse, ponctuation, espaces) → stabilité 98.7 %
 python tools/repl.py             # REPL interactif avec visualisation
 python tools/bench_baselines.py  # comparaison head-to-head (Haiku, cosine, GPT-4o-mini)
 ```

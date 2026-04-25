@@ -1,0 +1,210 @@
+{
+  "n_phrases": 63,
+  "n_variants": 602,
+  "n_flips": 8,
+  "stability": 0.9867109634551495,
+  "by_transform": {
+    "lower": {
+      "flips": 0,
+      "total": 3,
+      "examples": []
+    },
+    "upper": {
+      "flips": 0,
+      "total": 59,
+      "examples": []
+    },
+    "title": {
+      "flips": 0,
+      "total": 59,
+      "examples": []
+    },
+    "trail_excl": {
+      "flips": 2,
+      "total": 62,
+      "examples": [
+        {
+          "phrase": "yes and no",
+          "variant": "yes and no!",
+          "canonical": "unknown (0.83)",
+          "got": "yes (0.82)"
+        },
+        {
+          "phrase": "absolutely, I love impossible deadlines",
+          "variant": "absolutely, I love impossible deadlines!",
+          "canonical": "no (0.55)",
+          "got": "yes (0.65)"
+        }
+      ]
+    },
+    "trail_excl3": {
+      "flips": 1,
+      "total": 63,
+      "examples": [
+        {
+          "phrase": "absolutely, I love impossible deadlines",
+          "variant": "absolutely, I love impossible deadlines!!!",
+          "canonical": "no (0.55)",
+          "got": "yes (0.66)"
+        }
+      ]
+    },
+    "trail_qmark": {
+      "flips": 0,
+      "total": 62,
+      "examples": []
+    },
+    "trail_dots": {
+      "flips": 2,
+      "total": 61,
+      "examples": [
+        {
+          "phrase": "bien sur",
+          "variant": "bien sur...",
+          "canonical": "yes (0.97)",
+          "got": "unknown (0.90)"
+        },
+        {
+          "phrase": "absolutely, I love impossible deadlines",
+          "variant": "absolutely, I love impossible deadlines...",
+          "canonical": "no (0.55)",
+          "got": "yes (0.53)"
+        }
+      ]
+    },
+    "strip_punct": {
+      "flips": 2,
+      "total": 11,
+      "examples": [
+        {
+          "phrase": "bien entendu, c'est évident",
+          "variant": "bien entendu cest évident",
+          "canonical": "yes (0.95)",
+          "got": "no (0.51)"
+        },
+        {
+          "phrase": "I'd love to but I can't",
+          "variant": "Id love to but I cant",
+          "canonical": "no (0.85)",
+          "got": "yes (0.72)"
+        }
+      ]
+    },
+    "lead_space": {
+      "flips": 0,
+      "total": 62,
+      "examples": []
+    },
+    "trail_space": {
+      "flips": 0,
+      "total": 62,
+      "examples": []
+    },
+    "double_space": {
+      "flips": 0,
+      "total": 32,
+      "examples": []
+    },
+    "no_accent": {
+      "flips": 1,
+      "total": 7,
+      "examples": [
+        {
+          "phrase": "oui bien sûr, comme toujours...",
+          "variant": "oui bien sur, comme toujours...",
+          "canonical": "no (0.94)",
+          "got": "yes (0.96)"
+        }
+      ]
+    },
+    "mixed_case": {
+      "flips": 0,
+      "total": 59,
+      "examples": []
+    }
+  },
+  "fragile_phrases": [
+    {
+      "phrase": "bien sur",
+      "canonical": "yes",
+      "category": "missing_accents",
+      "flips": [
+        {
+          "transform": "trail_dots",
+          "variant": "bien sur...",
+          "got": "unknown"
+        }
+      ]
+    },
+    {
+      "phrase": "yes and no",
+      "canonical": "unknown",
+      "category": "repetition",
+      "flips": [
+        {
+          "transform": "trail_excl",
+          "variant": "yes and no!",
+          "got": "yes"
+        }
+      ]
+    },
+    {
+      "phrase": "absolutely, I love impossible deadlines",
+      "canonical": "no",
+      "category": "sarcasm",
+      "flips": [
+        {
+          "transform": "trail_excl",
+          "variant": "absolutely, I love impossible deadlines!",
+          "got": "yes"
+        },
+        {
+          "transform": "trail_excl3",
+          "variant": "absolutely, I love impossible deadlines!!!",
+          "got": "yes"
+        },
+        {
+          "transform": "trail_dots",
+          "variant": "absolutely, I love impossible deadlines...",
+          "got": "yes"
+        }
+      ]
+    },
+    {
+      "phrase": "oui bien sûr, comme toujours...",
+      "canonical": "no",
+      "category": "sarcasm",
+      "flips": [
+        {
+          "transform": "no_accent",
+          "variant": "oui bien sur, comme toujours...",
+          "got": "yes"
+        }
+      ]
+    },
+    {
+      "phrase": "bien entendu, c'est évident",
+      "canonical": "yes",
+      "category": "sarcasm",
+      "flips": [
+        {
+          "transform": "strip_punct",
+          "variant": "bien entendu cest évident",
+          "got": "no"
+        }
+      ]
+    },
+    {
+      "phrase": "I'd love to but I can't",
+      "canonical": "no",
+      "category": "compound",
+      "flips": [
+        {
+          "transform": "strip_punct",
+          "variant": "Id love to but I cant",
+          "got": "yes"
+        }
+      ]
+    }
+  ]
+}
