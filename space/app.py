@@ -264,11 +264,15 @@ CSS = """
 .fsl-meta { margin-top: 12px; color: var(--fsl-muted); font-size: 11px; text-align: right; font-variant-numeric: tabular-nums; }
 
 #fsl-presets-label { color: var(--fsl-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; margin: 8px 0; }
-.fsl-presets-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.fsl-presets-row { display: flex !important; flex-wrap: wrap !important; gap: 6px !important; align-items: flex-start !important; }
+.fsl-presets-row > * { flex: 0 0 auto !important; min-width: 0 !important; width: auto !important; }
 .fsl-presets-row button {
   background: var(--fsl-surface) !important; color: var(--fsl-muted) !important;
   border: 1px solid var(--fsl-border) !important; padding: 6px 10px !important; border-radius: 6px !important;
-  font-size: 12px !important; font-weight: normal !important; min-width: 0 !important; height: auto !important;
+  font-size: 12px !important; font-weight: normal !important;
+  min-width: 0 !important; width: auto !important; height: auto !important;
+  white-space: nowrap !important; line-height: 1.2 !important;
+  flex: 0 0 auto !important;
 }
 .fsl-presets-row button:hover { border-color: var(--fsl-accent) !important; color: var(--fsl-text) !important; }
 
