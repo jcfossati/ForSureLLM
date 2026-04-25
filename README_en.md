@@ -4,6 +4,8 @@
 
 Distilled `yes` / `no` / `unknown` classifier, EN + FR. Local inference with no API call, int8-quantized ONNX, ~2.5 ms CPU.
 
+🎯 **Live demo**: [huggingface.co/spaces/jcfossati/ForSureLLM](https://huggingface.co/spaces/jcfossati/ForSureLLM)
+
 Designed to recognize consent intent in a user's short reply (bot, CLI, IVR, automation). The host application tracks the state of the pending action; the classifier only says whether the user **agrees**, **refuses**, or **hesitates**.
 
 ## Metrics
