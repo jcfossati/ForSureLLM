@@ -1,0 +1,1724 @@
+{
+  "cases_count": 63,
+  "source": "adversarial (63 cas)",
+  "runs": [
+    {
+      "name": "ForSureLLM",
+      "accuracy": 0.889,
+      "correct": 56,
+      "total": 63,
+      "latency_p50_ms": 1.9,
+      "latency_p95_ms": 7.5,
+      "wall_time_s": 0.94,
+      "by_category": {
+        "canonical": {
+          "ok": 10,
+          "n": 10,
+          "acc": 1.0
+        },
+        "hedging": {
+          "ok": 8,
+          "n": 8,
+          "acc": 1.0
+        },
+        "missing_accents": {
+          "ok": 5,
+          "n": 5,
+          "acc": 1.0
+        },
+        "typos": {
+          "ok": 5,
+          "n": 5,
+          "acc": 1.0
+        },
+        "slang_abbrev": {
+          "ok": 3,
+          "n": 6,
+          "acc": 0.5
+        },
+        "degenerate": {
+          "ok": 3,
+          "n": 4,
+          "acc": 0.75
+        },
+        "repetition": {
+          "ok": 1,
+          "n": 3,
+          "acc": 0.333
+        },
+        "sarcasm": {
+          "ok": 5,
+          "n": 5,
+          "acc": 1.0
+        },
+        "compound": {
+          "ok": 6,
+          "n": 7,
+          "acc": 0.857
+        },
+        "off_topic": {
+          "ok": 4,
+          "n": 4,
+          "acc": 1.0
+        },
+        "interjection": {
+          "ok": 6,
+          "n": 6,
+          "acc": 1.0
+        }
+      }
+    },
+    {
+      "name": "Haiku 4.5 zero-shot",
+      "accuracy": 0.778,
+      "correct": 49,
+      "total": 63,
+      "latency_p50_ms": 566.6,
+      "latency_p95_ms": 826.9,
+      "wall_time_s": 37.29,
+      "by_category": {
+        "canonical": {
+          "ok": 9,
+          "n": 10,
+          "acc": 0.9
+        },
+        "hedging": {
+          "ok": 8,
+          "n": 8,
+          "acc": 1.0
+        },
+        "missing_accents": {
+          "ok": 5,
+          "n": 5,
+          "acc": 1.0
+        },
+        "typos": {
+          "ok": 4,
+          "n": 5,
+          "acc": 0.8
+        },
+        "slang_abbrev": {
+          "ok": 3,
+          "n": 6,
+          "acc": 0.5
+        },
+        "degenerate": {
+          "ok": 3,
+          "n": 4,
+          "acc": 0.75
+        },
+        "repetition": {
+          "ok": 3,
+          "n": 3,
+          "acc": 1.0
+        },
+        "sarcasm": {
+          "ok": 2,
+          "n": 5,
+          "acc": 0.4
+        },
+        "compound": {
+          "ok": 5,
+          "n": 7,
+          "acc": 0.714
+        },
+        "off_topic": {
+          "ok": 4,
+          "n": 4,
+          "acc": 1.0
+        },
+        "interjection": {
+          "ok": 3,
+          "n": 6,
+          "acc": 0.5
+        }
+      }
+    },
+    {
+      "name": "Cosine MiniLM-L12",
+      "accuracy": 0.683,
+      "correct": 43,
+      "total": 63,
+      "latency_p50_ms": 8.4,
+      "latency_p95_ms": 12.3,
+      "wall_time_s": 0.56,
+      "by_category": {
+        "canonical": {
+          "ok": 9,
+          "n": 10,
+          "acc": 0.9
+        },
+        "hedging": {
+          "ok": 6,
+          "n": 8,
+          "acc": 0.75
+        },
+        "missing_accents": {
+          "ok": 5,
+          "n": 5,
+          "acc": 1.0
+        },
+        "typos": {
+          "ok": 4,
+          "n": 5,
+          "acc": 0.8
+        },
+        "slang_abbrev": {
+          "ok": 2,
+          "n": 6,
+          "acc": 0.333
+        },
+        "degenerate": {
+          "ok": 0,
+          "n": 4,
+          "acc": 0.0
+        },
+        "repetition": {
+          "ok": 2,
+          "n": 3,
+          "acc": 0.667
+        },
+        "sarcasm": {
+          "ok": 1,
+          "n": 5,
+          "acc": 0.2
+        },
+        "compound": {
+          "ok": 4,
+          "n": 7,
+          "acc": 0.571
+        },
+        "off_topic": {
+          "ok": 4,
+          "n": 4,
+          "acc": 1.0
+        },
+        "interjection": {
+          "ok": 6,
+          "n": 6,
+          "acc": 1.0
+        }
+      }
+    }
+  ],
+  "predictions": {
+    "ForSureLLM": [
+      {
+        "phrase": "yes",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 782.0
+      },
+      {
+        "phrase": "no",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 4.1
+      },
+      {
+        "phrase": "oui",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 1.4
+      },
+      {
+        "phrase": "non",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 3.5
+      },
+      {
+        "phrase": "carrément",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 2.3
+      },
+      {
+        "phrase": "absolutely",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 2.6
+      },
+      {
+        "phrase": "nope",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 1.4
+      },
+      {
+        "phrase": "nan",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 1.3
+      },
+      {
+        "phrase": "ouais",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 7.5
+      },
+      {
+        "phrase": "yeah",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 7.5
+      },
+      {
+        "phrase": "peut-être",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "hedging",
+        "latency_ms": 3.7
+      },
+      {
+        "phrase": "maybe",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "hedging",
+        "latency_ms": 1.7
+      },
+      {
+        "phrase": "bof",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "hedging",
+        "latency_ms": 1.3
+      },
+      {
+        "phrase": "je sais pas trop",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "hedging",
+        "latency_ms": 2.3
+      },
+      {
+        "phrase": "I'm not sure",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "hedging",
+        "latency_ms": 2.3
+      },
+      {
+        "phrase": "mouais",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "hedging",
+        "latency_ms": 1.5
+      },
+      {
+        "phrase": "ça dépend",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "hedging",
+        "latency_ms": 2.0
+      },
+      {
+        "phrase": "it depends",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "hedging",
+        "latency_ms": 1.5
+      },
+      {
+        "phrase": "carrement",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "missing_accents",
+        "latency_ms": 1.4
+      },
+      {
+        "phrase": "peut-etre",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "missing_accents",
+        "latency_ms": 1.6
+      },
+      {
+        "phrase": "bien sur",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "missing_accents",
+        "latency_ms": 2.0
+      },
+      {
+        "phrase": "evidemment",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "missing_accents",
+        "latency_ms": 1.6
+      },
+      {
+        "phrase": "eh non",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "missing_accents",
+        "latency_ms": 1.7
+      },
+      {
+        "phrase": "ouai",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "typos",
+        "latency_ms": 2.1
+      },
+      {
+        "phrase": "yse",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "typos",
+        "latency_ms": 2.0
+      },
+      {
+        "phrase": "noooo",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "typos",
+        "latency_ms": 1.9
+      },
+      {
+        "phrase": "nooon",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "typos",
+        "latency_ms": 1.6
+      },
+      {
+        "phrase": "yyyyep",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "typos",
+        "latency_ms": 1.6
+      },
+      {
+        "phrase": "mdr",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "slang_abbrev",
+        "latency_ms": 1.5
+      },
+      {
+        "phrase": "lol",
+        "expected": "unknown",
+        "predicted": "no",
+        "correct": false,
+        "category": "slang_abbrev",
+        "latency_ms": 1.6
+      },
+      {
+        "phrase": "tkt",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "slang_abbrev",
+        "latency_ms": 1.3
+      },
+      {
+        "phrase": "np",
+        "expected": "yes",
+        "predicted": "unknown",
+        "correct": false,
+        "category": "slang_abbrev",
+        "latency_ms": 1.2
+      },
+      {
+        "phrase": "grv",
+        "expected": "no",
+        "predicted": "unknown",
+        "correct": false,
+        "category": "slang_abbrev",
+        "latency_ms": 1.2
+      },
+      {
+        "phrase": "nah fam",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "slang_abbrev",
+        "latency_ms": 2.0
+      },
+      {
+        "phrase": "!",
+        "expected": "unknown",
+        "predicted": "yes",
+        "correct": false,
+        "category": "degenerate",
+        "latency_ms": 2.1
+      },
+      {
+        "phrase": "?",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "degenerate",
+        "latency_ms": 1.9
+      },
+      {
+        "phrase": "...",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "degenerate",
+        "latency_ms": 1.6
+      },
+      {
+        "phrase": "   ",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "degenerate",
+        "latency_ms": 1.9
+      },
+      {
+        "phrase": "nope nope nope",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "repetition",
+        "latency_ms": 6.3
+      },
+      {
+        "phrase": "oui oui oui",
+        "expected": "yes",
+        "predicted": "no",
+        "correct": false,
+        "category": "repetition",
+        "latency_ms": 4.4
+      },
+      {
+        "phrase": "yes and no",
+        "expected": "unknown",
+        "predicted": "yes",
+        "correct": false,
+        "category": "repetition",
+        "latency_ms": 11.8
+      },
+      {
+        "phrase": "absolutely, I love impossible deadlines",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "sarcasm",
+        "latency_ms": 2.9
+      },
+      {
+        "phrase": "oui bien sûr, comme toujours...",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "sarcasm",
+        "latency_ms": 2.2
+      },
+      {
+        "phrase": "oh great, another meeting",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "sarcasm",
+        "latency_ms": 1.7
+      },
+      {
+        "phrase": "bien entendu, c'est évident",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "sarcasm",
+        "latency_ms": 7.6
+      },
+      {
+        "phrase": "yeah right",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "sarcasm",
+        "latency_ms": 1.7
+      },
+      {
+        "phrase": "j'aimerais bien mais non",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "compound",
+        "latency_ms": 2.0
+      },
+      {
+        "phrase": "I'd love to but I can't",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "compound",
+        "latency_ms": 3.4
+      },
+      {
+        "phrase": "oui avec plaisir",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "compound",
+        "latency_ms": 1.7
+      },
+      {
+        "phrase": "pas de problème",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "compound",
+        "latency_ms": 5.0
+      },
+      {
+        "phrase": "no problem",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "compound",
+        "latency_ms": 2.6
+      },
+      {
+        "phrase": "why not",
+        "expected": "yes",
+        "predicted": "unknown",
+        "correct": false,
+        "category": "compound",
+        "latency_ms": 1.9
+      },
+      {
+        "phrase": "pourquoi pas",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "compound",
+        "latency_ms": 1.3
+      },
+      {
+        "phrase": "it's raining",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "off_topic",
+        "latency_ms": 1.7
+      },
+      {
+        "phrase": "j'ai mangé une pizza",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "off_topic",
+        "latency_ms": 2.2
+      },
+      {
+        "phrase": "what time is the meeting",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "off_topic",
+        "latency_ms": 1.6
+      },
+      {
+        "phrase": "mon chat dort",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "off_topic",
+        "latency_ms": 2.3
+      },
+      {
+        "phrase": "oh yeah",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "interjection",
+        "latency_ms": 1.3
+      },
+      {
+        "phrase": "ah non",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "interjection",
+        "latency_ms": 1.6
+      },
+      {
+        "phrase": "mais oui",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "interjection",
+        "latency_ms": 1.2
+      },
+      {
+        "phrase": "hell no",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "interjection",
+        "latency_ms": 1.4
+      },
+      {
+        "phrase": "bah ouais",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "interjection",
+        "latency_ms": 4.7
+      },
+      {
+        "phrase": "heck yes",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "interjection",
+        "latency_ms": 2.9
+      }
+    ],
+    "Haiku 4.5 zero-shot": [
+      {
+        "phrase": "yes",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 722.1
+      },
+      {
+        "phrase": "no",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 450.9
+      },
+      {
+        "phrase": "oui",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 516.3
+      },
+      {
+        "phrase": "non",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 485.4
+      },
+      {
+        "phrase": "carrément",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 527.0
+      },
+      {
+        "phrase": "absolutely",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 696.0
+      },
+      {
+        "phrase": "nope",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 458.2
+      },
+      {
+        "phrase": "nan",
+        "expected": "no",
+        "predicted": "unknown",
+        "correct": false,
+        "category": "canonical",
+        "latency_ms": 519.2
+      },
+      {
+        "phrase": "ouais",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 682.4
+      },
+      {
+        "phrase": "yeah",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 597.4
+      },
+      {
+        "phrase": "peut-être",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "hedging",
+        "latency_ms": 826.9
+      },
+      {
+        "phrase": "maybe",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "hedging",
+        "latency_ms": 524.4
+      },
+      {
+        "phrase": "bof",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "hedging",
+        "latency_ms": 563.5
+      },
+      {
+        "phrase": "je sais pas trop",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "hedging",
+        "latency_ms": 617.1
+      },
+      {
+        "phrase": "I'm not sure",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "hedging",
+        "latency_ms": 815.8
+      },
+      {
+        "phrase": "mouais",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "hedging",
+        "latency_ms": 443.3
+      },
+      {
+        "phrase": "ça dépend",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "hedging",
+        "latency_ms": 474.6
+      },
+      {
+        "phrase": "it depends",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "hedging",
+        "latency_ms": 646.9
+      },
+      {
+        "phrase": "carrement",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "missing_accents",
+        "latency_ms": 668.7
+      },
+      {
+        "phrase": "peut-etre",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "missing_accents",
+        "latency_ms": 976.4
+      },
+      {
+        "phrase": "bien sur",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "missing_accents",
+        "latency_ms": 601.0
+      },
+      {
+        "phrase": "evidemment",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "missing_accents",
+        "latency_ms": 518.9
+      },
+      {
+        "phrase": "eh non",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "missing_accents",
+        "latency_ms": 631.6
+      },
+      {
+        "phrase": "ouai",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "typos",
+        "latency_ms": 519.3
+      },
+      {
+        "phrase": "yse",
+        "expected": "yes",
+        "predicted": "unknown",
+        "correct": false,
+        "category": "typos",
+        "latency_ms": 489.3
+      },
+      {
+        "phrase": "noooo",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "typos",
+        "latency_ms": 628.2
+      },
+      {
+        "phrase": "nooon",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "typos",
+        "latency_ms": 651.9
+      },
+      {
+        "phrase": "yyyyep",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "typos",
+        "latency_ms": 766.8
+      },
+      {
+        "phrase": "mdr",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "slang_abbrev",
+        "latency_ms": 636.9
+      },
+      {
+        "phrase": "lol",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "slang_abbrev",
+        "latency_ms": 474.6
+      },
+      {
+        "phrase": "tkt",
+        "expected": "yes",
+        "predicted": "unknown",
+        "correct": false,
+        "category": "slang_abbrev",
+        "latency_ms": 713.3
+      },
+      {
+        "phrase": "np",
+        "expected": "yes",
+        "predicted": "unknown",
+        "correct": false,
+        "category": "slang_abbrev",
+        "latency_ms": 600.6
+      },
+      {
+        "phrase": "grv",
+        "expected": "no",
+        "predicted": "unknown",
+        "correct": false,
+        "category": "slang_abbrev",
+        "latency_ms": 475.3
+      },
+      {
+        "phrase": "nah fam",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "slang_abbrev",
+        "latency_ms": 487.1
+      },
+      {
+        "phrase": "!",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "degenerate",
+        "latency_ms": 645.4
+      },
+      {
+        "phrase": "?",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "degenerate",
+        "latency_ms": 437.3
+      },
+      {
+        "phrase": "...",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "degenerate",
+        "latency_ms": 545.0
+      },
+      {
+        "phrase": "   ",
+        "expected": "unknown",
+        "predicted": "error:BadRequestError",
+        "correct": false,
+        "category": "degenerate",
+        "latency_ms": 0.0
+      },
+      {
+        "phrase": "nope nope nope",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "repetition",
+        "latency_ms": 477.2
+      },
+      {
+        "phrase": "oui oui oui",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "repetition",
+        "latency_ms": 604.8
+      },
+      {
+        "phrase": "yes and no",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "repetition",
+        "latency_ms": 893.4
+      },
+      {
+        "phrase": "absolutely, I love impossible deadlines",
+        "expected": "no",
+        "predicted": "unknown",
+        "correct": false,
+        "category": "sarcasm",
+        "latency_ms": 469.9
+      },
+      {
+        "phrase": "oui bien sûr, comme toujours...",
+        "expected": "no",
+        "predicted": "unknown",
+        "correct": false,
+        "category": "sarcasm",
+        "latency_ms": 666.8
+      },
+      {
+        "phrase": "oh great, another meeting",
+        "expected": "no",
+        "predicted": "unknown",
+        "correct": false,
+        "category": "sarcasm",
+        "latency_ms": 456.5
+      },
+      {
+        "phrase": "bien entendu, c'est évident",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "sarcasm",
+        "latency_ms": 543.8
+      },
+      {
+        "phrase": "yeah right",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "sarcasm",
+        "latency_ms": 520.2
+      },
+      {
+        "phrase": "j'aimerais bien mais non",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "compound",
+        "latency_ms": 515.0
+      },
+      {
+        "phrase": "I'd love to but I can't",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "compound",
+        "latency_ms": 517.5
+      },
+      {
+        "phrase": "oui avec plaisir",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "compound",
+        "latency_ms": 628.5
+      },
+      {
+        "phrase": "pas de problème",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "compound",
+        "latency_ms": 613.4
+      },
+      {
+        "phrase": "no problem",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "compound",
+        "latency_ms": 618.3
+      },
+      {
+        "phrase": "why not",
+        "expected": "yes",
+        "predicted": "unknown",
+        "correct": false,
+        "category": "compound",
+        "latency_ms": 653.1
+      },
+      {
+        "phrase": "pourquoi pas",
+        "expected": "yes",
+        "predicted": "unknown",
+        "correct": false,
+        "category": "compound",
+        "latency_ms": 505.7
+      },
+      {
+        "phrase": "it's raining",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "off_topic",
+        "latency_ms": 449.8
+      },
+      {
+        "phrase": "j'ai mangé une pizza",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "off_topic",
+        "latency_ms": 566.6
+      },
+      {
+        "phrase": "what time is the meeting",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "off_topic",
+        "latency_ms": 615.9
+      },
+      {
+        "phrase": "mon chat dort",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "off_topic",
+        "latency_ms": 687.2
+      },
+      {
+        "phrase": "oh yeah",
+        "expected": "yes",
+        "predicted": "error:RateLimitError",
+        "correct": false,
+        "category": "interjection",
+        "latency_ms": 0.0
+      },
+      {
+        "phrase": "ah non",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "interjection",
+        "latency_ms": 491.0
+      },
+      {
+        "phrase": "mais oui",
+        "expected": "yes",
+        "predicted": "error:RateLimitError",
+        "correct": false,
+        "category": "interjection",
+        "latency_ms": 0.0
+      },
+      {
+        "phrase": "hell no",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "interjection",
+        "latency_ms": 473.1
+      },
+      {
+        "phrase": "bah ouais",
+        "expected": "yes",
+        "predicted": "error:RateLimitError",
+        "correct": false,
+        "category": "interjection",
+        "latency_ms": 0.0
+      },
+      {
+        "phrase": "heck yes",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "interjection",
+        "latency_ms": 810.5
+      }
+    ],
+    "Cosine MiniLM-L12": [
+      {
+        "phrase": "yes",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 19.6
+      },
+      {
+        "phrase": "no",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 11.7
+      },
+      {
+        "phrase": "oui",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 9.9
+      },
+      {
+        "phrase": "non",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 11.1
+      },
+      {
+        "phrase": "carrément",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 6.2
+      },
+      {
+        "phrase": "absolutely",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 6.9
+      },
+      {
+        "phrase": "nope",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 7.0
+      },
+      {
+        "phrase": "nan",
+        "expected": "no",
+        "predicted": "yes",
+        "correct": false,
+        "category": "canonical",
+        "latency_ms": 12.5
+      },
+      {
+        "phrase": "ouais",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 8.1
+      },
+      {
+        "phrase": "yeah",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "canonical",
+        "latency_ms": 5.6
+      },
+      {
+        "phrase": "peut-être",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "hedging",
+        "latency_ms": 5.7
+      },
+      {
+        "phrase": "maybe",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "hedging",
+        "latency_ms": 9.1
+      },
+      {
+        "phrase": "bof",
+        "expected": "unknown",
+        "predicted": "yes",
+        "correct": false,
+        "category": "hedging",
+        "latency_ms": 8.9
+      },
+      {
+        "phrase": "je sais pas trop",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "hedging",
+        "latency_ms": 8.5
+      },
+      {
+        "phrase": "I'm not sure",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "hedging",
+        "latency_ms": 6.9
+      },
+      {
+        "phrase": "mouais",
+        "expected": "unknown",
+        "predicted": "yes",
+        "correct": false,
+        "category": "hedging",
+        "latency_ms": 6.9
+      },
+      {
+        "phrase": "ça dépend",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "hedging",
+        "latency_ms": 6.5
+      },
+      {
+        "phrase": "it depends",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "hedging",
+        "latency_ms": 10.2
+      },
+      {
+        "phrase": "carrement",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "missing_accents",
+        "latency_ms": 8.2
+      },
+      {
+        "phrase": "peut-etre",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "missing_accents",
+        "latency_ms": 11.4
+      },
+      {
+        "phrase": "bien sur",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "missing_accents",
+        "latency_ms": 7.5
+      },
+      {
+        "phrase": "evidemment",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "missing_accents",
+        "latency_ms": 5.9
+      },
+      {
+        "phrase": "eh non",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "missing_accents",
+        "latency_ms": 8.3
+      },
+      {
+        "phrase": "ouai",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "typos",
+        "latency_ms": 8.1
+      },
+      {
+        "phrase": "yse",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "typos",
+        "latency_ms": 7.1
+      },
+      {
+        "phrase": "noooo",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "typos",
+        "latency_ms": 12.1
+      },
+      {
+        "phrase": "nooon",
+        "expected": "no",
+        "predicted": "yes",
+        "correct": false,
+        "category": "typos",
+        "latency_ms": 8.2
+      },
+      {
+        "phrase": "yyyyep",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "typos",
+        "latency_ms": 9.4
+      },
+      {
+        "phrase": "mdr",
+        "expected": "unknown",
+        "predicted": "yes",
+        "correct": false,
+        "category": "slang_abbrev",
+        "latency_ms": 7.3
+      },
+      {
+        "phrase": "lol",
+        "expected": "unknown",
+        "predicted": "yes",
+        "correct": false,
+        "category": "slang_abbrev",
+        "latency_ms": 8.1
+      },
+      {
+        "phrase": "tkt",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "slang_abbrev",
+        "latency_ms": 10.3
+      },
+      {
+        "phrase": "np",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "slang_abbrev",
+        "latency_ms": 6.8
+      },
+      {
+        "phrase": "grv",
+        "expected": "no",
+        "predicted": "yes",
+        "correct": false,
+        "category": "slang_abbrev",
+        "latency_ms": 6.2
+      },
+      {
+        "phrase": "nah fam",
+        "expected": "no",
+        "predicted": "yes",
+        "correct": false,
+        "category": "slang_abbrev",
+        "latency_ms": 7.8
+      },
+      {
+        "phrase": "!",
+        "expected": "unknown",
+        "predicted": "yes",
+        "correct": false,
+        "category": "degenerate",
+        "latency_ms": 11.7
+      },
+      {
+        "phrase": "?",
+        "expected": "unknown",
+        "predicted": "yes",
+        "correct": false,
+        "category": "degenerate",
+        "latency_ms": 8.4
+      },
+      {
+        "phrase": "...",
+        "expected": "unknown",
+        "predicted": "yes",
+        "correct": false,
+        "category": "degenerate",
+        "latency_ms": 7.3
+      },
+      {
+        "phrase": "   ",
+        "expected": "unknown",
+        "predicted": "yes",
+        "correct": false,
+        "category": "degenerate",
+        "latency_ms": 10.9
+      },
+      {
+        "phrase": "nope nope nope",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "repetition",
+        "latency_ms": 8.3
+      },
+      {
+        "phrase": "oui oui oui",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "repetition",
+        "latency_ms": 7.1
+      },
+      {
+        "phrase": "yes and no",
+        "expected": "unknown",
+        "predicted": "yes",
+        "correct": false,
+        "category": "repetition",
+        "latency_ms": 10.2
+      },
+      {
+        "phrase": "absolutely, I love impossible deadlines",
+        "expected": "no",
+        "predicted": "yes",
+        "correct": false,
+        "category": "sarcasm",
+        "latency_ms": 9.3
+      },
+      {
+        "phrase": "oui bien sûr, comme toujours...",
+        "expected": "no",
+        "predicted": "yes",
+        "correct": false,
+        "category": "sarcasm",
+        "latency_ms": 10.7
+      },
+      {
+        "phrase": "oh great, another meeting",
+        "expected": "no",
+        "predicted": "yes",
+        "correct": false,
+        "category": "sarcasm",
+        "latency_ms": 9.3
+      },
+      {
+        "phrase": "bien entendu, c'est évident",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "sarcasm",
+        "latency_ms": 6.6
+      },
+      {
+        "phrase": "yeah right",
+        "expected": "no",
+        "predicted": "yes",
+        "correct": false,
+        "category": "sarcasm",
+        "latency_ms": 6.0
+      },
+      {
+        "phrase": "j'aimerais bien mais non",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "compound",
+        "latency_ms": 8.6
+      },
+      {
+        "phrase": "I'd love to but I can't",
+        "expected": "no",
+        "predicted": "unknown",
+        "correct": false,
+        "category": "compound",
+        "latency_ms": 9.1
+      },
+      {
+        "phrase": "oui avec plaisir",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "compound",
+        "latency_ms": 12.2
+      },
+      {
+        "phrase": "pas de problème",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "compound",
+        "latency_ms": 10.2
+      },
+      {
+        "phrase": "no problem",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "compound",
+        "latency_ms": 10.0
+      },
+      {
+        "phrase": "why not",
+        "expected": "yes",
+        "predicted": "no",
+        "correct": false,
+        "category": "compound",
+        "latency_ms": 7.2
+      },
+      {
+        "phrase": "pourquoi pas",
+        "expected": "yes",
+        "predicted": "no",
+        "correct": false,
+        "category": "compound",
+        "latency_ms": 10.9
+      },
+      {
+        "phrase": "it's raining",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "off_topic",
+        "latency_ms": 8.8
+      },
+      {
+        "phrase": "j'ai mangé une pizza",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "off_topic",
+        "latency_ms": 6.6
+      },
+      {
+        "phrase": "what time is the meeting",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "off_topic",
+        "latency_ms": 12.3
+      },
+      {
+        "phrase": "mon chat dort",
+        "expected": "unknown",
+        "predicted": "unknown",
+        "correct": true,
+        "category": "off_topic",
+        "latency_ms": 11.1
+      },
+      {
+        "phrase": "oh yeah",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "interjection",
+        "latency_ms": 7.9
+      },
+      {
+        "phrase": "ah non",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "interjection",
+        "latency_ms": 8.3
+      },
+      {
+        "phrase": "mais oui",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "interjection",
+        "latency_ms": 7.9
+      },
+      {
+        "phrase": "hell no",
+        "expected": "no",
+        "predicted": "no",
+        "correct": true,
+        "category": "interjection",
+        "latency_ms": 13.7
+      },
+      {
+        "phrase": "bah ouais",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "interjection",
+        "latency_ms": 9.0
+      },
+      {
+        "phrase": "heck yes",
+        "expected": "yes",
+        "predicted": "yes",
+        "correct": true,
+        "category": "interjection",
+        "latency_ms": 10.6
+      }
+    ]
+  }
+}
