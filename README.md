@@ -43,6 +43,17 @@ classify("yeah right")                # ("no", 0.88)
 classify("ok", threshold=0.95)        # ("yes" si >0.95, sinon "unknown")
 ```
 
+### Confirmation d'action (bot, IVR, automation)
+
+Pour les contextes où la classification déclenche une action côté serveur (annuler une commande, confirmer un paiement, lancer un déploiement), passe `threshold=0.85` ou plus :
+
+```python
+classify("yeah right", threshold=0.9)   # ("unknown", …) → re-prompt l'utilisateur
+classify("ouais", threshold=0.9)        # ("yes", 0.97) → action déclenchée
+```
+
+Pourquoi : certains idiomes culturels (`yeah right`, `tu m'étonnes`, `oh toootally`) sont par défaut sarcastiques en usage général mais peuvent être sincères chez un utilisateur qui ne ponctue pas. Avec un seuil élevé, ces cas borderline tombent en `unknown` → ton app re-prompte au lieu de déclencher la mauvaise action. C'est strictement plus sûr en confirmation d'action ; le coût (un re-prompt occasionnel) est faible comparé à exécuter l'inverse de l'intention de l'utilisateur.
+
 ## Installation
 
 ```bash
@@ -320,9 +331,6 @@ ForSureLLM/
 │
 ├── tests/
 │   └── test_classifier.py         # 37 tests unitaires
-│
-├── docs/
-│   └── brief.md                   # brief projet
 │
 ├── llm_config.yaml                # config modèles LLM (éditable)
 ├── .env.example                   # template clés API
