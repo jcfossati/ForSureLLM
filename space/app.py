@@ -1,11 +1,12 @@
 """Gradio demo for ForSureLLM hosted on HuggingFace Spaces.
 
 Loads the ONNX model from the Model repo (jcfossati/ForSureLLM) at startup,
-keeps a small inference function in memory, and exposes a simple yes/no/unknown
-classifier UI with click-to-try examples.
+exposes a yes/no/unknown classifier UI styled to match the static web/index.html
+demo (dark minimalist, color-coded bars, token list).
 """
 from __future__ import annotations
 
+import html
 import json
 import re
 import time
@@ -95,18 +96,19 @@ def _softmax(x: np.ndarray) -> np.ndarray:
     return e / e.sum(axis=-1, keepdims=True)
 
 
-def classify(phrase: str) -> tuple[str, np.ndarray]:
+def classify_full(phrase: str, threshold: float = 0.0) -> dict:
+    """Returns {label, confidence, probs: {yes,no,unknown}, tokens, source}."""
     sym = _classify_symbolic(phrase or "")
     if sym is not None:
         label, conf = sym
-        probs = np.zeros(3)
-        probs[CLASSES.index(label)] = conf
-        for i, c in enumerate(CLASSES):
-            if c != label:
-                probs[i] = (1 - conf) / 2
-        return label, probs
+        probs = {c: 0.0 for c in CLASSES}
+        probs[label] = conf
+        return {"label": label, "confidence": conf, "probs": probs, "tokens": [phrase.strip()], "source": "symbolic"}
     if not _HAS_LETTER_RE.search(phrase or ""):
-        return "unknown", np.array([0.0, 0.0, 1.0])
+        return {"label": "unknown", "confidence": 1.0,
+                "probs": {"yes": 0.0, "no": 0.0, "unknown": 1.0},
+                "tokens": [], "source": "no-letter shortcut"}
+
     enc = TOKENIZER.encode(_normalize(phrase))
     feeds = {"input_ids": np.array([enc.ids], dtype=np.int64),
              "attention_mask": np.array([enc.attention_mask], dtype=np.int64)}
@@ -114,78 +116,200 @@ def classify(phrase: str) -> tuple[str, np.ndarray]:
         feeds["token_type_ids"] = np.array([enc.type_ids], dtype=np.int64)
     feeds = {k: v for k, v in feeds.items() if k in INPUT_NAMES}
     logits = SESSION.run(None, feeds)[0][0]
-    probs = _softmax(logits / TEMPERATURE)
-    label = CLASSES[int(probs.argmax())]
-    return label, probs
+    probs_arr = _softmax(logits / TEMPERATURE)
+    probs = {c: float(p) for c, p in zip(CLASSES, probs_arr)}
+    idx = int(probs_arr.argmax())
+    label = CLASSES[idx]
+    conf = probs[label]
+    if conf < threshold and label != "unknown":
+        label = "unknown"
+        conf = probs["unknown"]
+    return {"label": label, "confidence": conf, "probs": probs,
+            "tokens": [t for t in enc.tokens if t not in {"<s>", "</s>", "[CLS]", "[SEP]", "[PAD]"}],
+            "source": "model"}
 
 
-# --- UI helpers -------------------------------------------------------------
-LABEL_EMOJI = {"yes": "✅ YES", "no": "❌ NO", "unknown": "❓ UNKNOWN"}
-LABEL_COLOR = {"yes": "#22c55e", "no": "#ef4444", "unknown": "#a3a3a3"}
+# --- Rendering ---------------------------------------------------------------
+EMPTY_HTML = '<div class="fsl-result fsl-result-empty">Tape une phrase pour la classifier.</div>'
 
-EXAMPLES = [
-    ["carrément"],
-    ["tu rêves"],
-    ["np"],
-    ["oh toootally"],
-    ["bah oui"],
-    ["+1"],
-    ["is the pope catholic"],
-    ["je passe"],
-    ["yes mais non"],
-    ["no cap"],
-    ["mouais bof"],
-    ["100%"],
-    ["if I must"],
-    ["nan nan jamais"],
-]
-
-
-def predict(phrase: str) -> tuple[str, dict, str]:
-    if not phrase or not phrase.strip():
-        return "—", {}, ""
-    t0 = time.perf_counter()
-    label, probs = classify(phrase)
-    elapsed_ms = (time.perf_counter() - t0) * 1000
-    badge = f"<div style='font-size:48px;font-weight:700;color:{LABEL_COLOR[label]};text-align:center'>{LABEL_EMOJI[label]}</div>"
-    dist = {c: float(p) for c, p in zip(CLASSES, probs)}
-    timing = f"<div style='text-align:center;color:#888;font-size:12px;margin-top:8px'>inférence : {elapsed_ms:.1f} ms</div>"
-    return badge, dist, timing
-
-
-# --- Layout -----------------------------------------------------------------
-DESCRIPTION = """
-# ForSureLLM
-
-Classifier yes/no/unknown ultra-rapide pour réponses courtes (FR + EN). Distillé de Claude Sonnet vers MiniLM-L12 multilingue.
-
-- **95.2 %** sur 124 phrases adversarial (vs Haiku 4.5 zero-shot **75 %**, vs Cosine MiniLM **68 %**)
-- **~2 ms** sur CPU, **113 MB** quantifié int8, **+20 pts** vs Haiku
-- Préprocesseurs déterministes pour symboles (`+1`, `100%`, `10/10`, `👍`...)
-
-[GitHub](https://github.com/jcfossati/ForSureLLM) · [Model](https://huggingface.co/jcfossati/ForSureLLM)
+RESULT_TEMPLATE = """
+<div class="fsl-result">
+  <div class="fsl-header">
+    <div class="fsl-label fsl-{label}">{label_upper}</div>
+    <div class="fsl-conf">conf {confidence:.3f}</div>
+  </div>
+  <div class="fsl-bars">{bars}</div>
+  <div class="fsl-tokens">
+    <div class="fsl-tokens-label">{token_label}</div>
+    <div class="fsl-tokens-list">{tokens_html}</div>
+  </div>
+  <div class="fsl-meta">{source} · {elapsed_ms:.1f} ms</div>
+</div>
 """
 
-with gr.Blocks(title="ForSureLLM", theme=gr.themes.Soft()) as demo:
-    gr.Markdown(DESCRIPTION)
-    with gr.Row():
-        with gr.Column(scale=2):
-            inp = gr.Textbox(
-                label="Phrase à classer",
-                placeholder="Tape une phrase courte en français ou anglais",
-                lines=2,
-                autofocus=True,
-            )
-            btn = gr.Button("Classer", variant="primary")
-        with gr.Column(scale=3):
-            badge = gr.HTML(label="Résultat")
-            timing = gr.HTML()
-            dist = gr.Label(label="Distribution de probabilités", num_top_classes=3)
+BAR_TEMPLATE = """
+<div class="fsl-bar-row">
+  <div class="fsl-bar-name">{name}</div>
+  <div class="fsl-bar-track"><div class="fsl-bar-fill fsl-{name}" style="width:{pct:.1f}%"></div></div>
+  <div class="fsl-bar-val">{value:.3f}</div>
+</div>
+"""
 
-    gr.Examples(examples=EXAMPLES, inputs=[inp], label="Exemples (clic pour tester)")
 
-    inp.submit(predict, inputs=[inp], outputs=[badge, dist, timing])
-    btn.click(predict, inputs=[inp], outputs=[badge, dist, timing])
+def render_result(phrase: str, threshold: float) -> str:
+    if not phrase or not phrase.strip():
+        return EMPTY_HTML
+    t0 = time.perf_counter()
+    res = classify_full(phrase, threshold)
+    elapsed_ms = (time.perf_counter() - t0) * 1000
+    bars = "".join(
+        BAR_TEMPLATE.format(name=cls, pct=res["probs"][cls] * 100, value=res["probs"][cls])
+        for cls in ["yes", "no", "unknown"]
+    )
+    tokens = res["tokens"]
+    if tokens and res["source"] == "model":
+        tokens_html = "".join(f'<span class="fsl-tok">{html.escape(t)}</span>' for t in tokens)
+        token_label = f"tokens ({len(tokens)})"
+    else:
+        tokens_html = '<span class="fsl-tok-empty">—</span>'
+        token_label = "tokens"
+    return RESULT_TEMPLATE.format(
+        label=res["label"],
+        label_upper=res["label"].upper(),
+        confidence=res["confidence"],
+        bars=bars,
+        tokens_html=tokens_html,
+        token_label=token_label,
+        source=res["source"],
+        elapsed_ms=elapsed_ms,
+    )
+
+
+PRESETS = [
+    "carrément", "absolutely", "laisse tomber", "no way",
+    "peut-être", "maybe", "bof", "je sais pas trop",
+    "il pleut dehors", "what time is it",
+    "oui mais non", "yeah right", "tu rêves",
+    "pourquoi pas", "ouais", "nope", "tkt", "np",
+    "no cap", "is the pope catholic", "+1", "100%", "👍",
+    "oh toootally", "if I must", "bah oui",
+]
+
+CSS = """
+:root {
+  --fsl-bg: #0e0f13;
+  --fsl-surface: #171922;
+  --fsl-surface-2: #0b0c10;
+  --fsl-border: #262937;
+  --fsl-text: #e5e7ee;
+  --fsl-muted: #8b90a5;
+  --fsl-yes: #22c55e;
+  --fsl-no: #ef4444;
+  --fsl-unknown: #eab308;
+  --fsl-accent: #6366f1;
+}
+
+.gradio-container { background: var(--fsl-bg) !important; max-width: 760px !important; margin: 0 auto !important; }
+.gradio-container, .gradio-container * { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif !important; }
+
+#fsl-header { padding: 8px 0 24px; border-bottom: 1px solid var(--fsl-border); margin-bottom: 24px; }
+#fsl-header h1 { color: var(--fsl-text); font-size: 24px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.01em; }
+#fsl-header .sub { color: var(--fsl-muted); font-size: 13px; margin: 0; }
+#fsl-header .links { color: var(--fsl-muted); font-size: 12px; margin-top: 8px; }
+#fsl-header .links a { color: var(--fsl-accent); text-decoration: none; margin-right: 12px; }
+#fsl-header .links a:hover { text-decoration: underline; }
+
+.fsl-input-card { background: var(--fsl-surface); border: 1px solid var(--fsl-border) !important; border-radius: 12px; padding: 4px; }
+.fsl-input-card textarea, .fsl-input-card input {
+  background: var(--fsl-surface-2) !important; color: var(--fsl-text) !important;
+  border: 1px solid var(--fsl-border) !important; border-radius: 8px !important;
+  font-size: 15px !important;
+}
+.fsl-input-card textarea:focus, .fsl-input-card input:focus { border-color: var(--fsl-accent) !important; box-shadow: none !important; }
+.fsl-input-card label span { color: var(--fsl-muted) !important; font-size: 13px !important; }
+
+.fsl-threshold .wrap { background: transparent !important; }
+.fsl-threshold input[type="range"] { accent-color: var(--fsl-accent) !important; }
+
+.fsl-result {
+  background: var(--fsl-surface); border: 1px solid var(--fsl-border); border-radius: 12px;
+  padding: 20px; min-height: 120px; color: var(--fsl-text);
+}
+.fsl-result-empty { color: var(--fsl-muted); font-size: 13px; display: flex; align-items: center; justify-content: center; min-height: 160px; }
+
+.fsl-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 18px; }
+.fsl-label { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; }
+.fsl-label.fsl-yes { color: var(--fsl-yes); }
+.fsl-label.fsl-no { color: var(--fsl-no); }
+.fsl-label.fsl-unknown { color: var(--fsl-unknown); }
+.fsl-conf { color: var(--fsl-muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+
+.fsl-bars { display: flex; flex-direction: column; gap: 10px; }
+.fsl-bar-row { display: grid; grid-template-columns: 72px 1fr 56px; gap: 12px; align-items: center; }
+.fsl-bar-name { font-size: 13px; color: var(--fsl-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.fsl-bar-track { height: 10px; background: var(--fsl-surface-2); border-radius: 4px; overflow: hidden; }
+.fsl-bar-fill { height: 100%; border-radius: 4px; transition: width 0.2s ease; }
+.fsl-bar-fill.fsl-yes { background: var(--fsl-yes); }
+.fsl-bar-fill.fsl-no { background: var(--fsl-no); }
+.fsl-bar-fill.fsl-unknown { background: var(--fsl-unknown); }
+.fsl-bar-val { font-size: 13px; font-variant-numeric: tabular-nums; color: var(--fsl-text); text-align: right; }
+
+.fsl-tokens { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--fsl-border); }
+.fsl-tokens-label { font-size: 11px; color: var(--fsl-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.fsl-tokens-list { display: flex; flex-wrap: wrap; gap: 4px; }
+.fsl-tok { background: var(--fsl-surface-2); border: 1px solid var(--fsl-border); border-radius: 4px; padding: 2px 6px;
+           font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 11px; color: var(--fsl-muted); }
+.fsl-tok-empty { color: var(--fsl-muted); font-size: 11px; }
+
+.fsl-meta { margin-top: 12px; color: var(--fsl-muted); font-size: 11px; text-align: right; font-variant-numeric: tabular-nums; }
+
+#fsl-presets-label { color: var(--fsl-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; margin: 8px 0; }
+.fsl-presets-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.fsl-presets-row button {
+  background: var(--fsl-surface) !important; color: var(--fsl-muted) !important;
+  border: 1px solid var(--fsl-border) !important; padding: 6px 10px !important; border-radius: 6px !important;
+  font-size: 12px !important; font-weight: normal !important; min-width: 0 !important; height: auto !important;
+}
+.fsl-presets-row button:hover { border-color: var(--fsl-accent) !important; color: var(--fsl-text) !important; }
+
+footer, .footer, .built-with-gradio { display: none !important; }
+"""
+
+with gr.Blocks(title="ForSureLLM", css=CSS, theme=gr.themes.Base()) as demo:
+    gr.HTML("""
+    <div id="fsl-header">
+      <h1>ForSureLLM</h1>
+      <div class="sub">yes / no / unknown classifier · EN + FR · MiniLM-L12 distilled · 113 MB ONNX int8 · ~2 ms CPU</div>
+      <div class="links">
+        <a href="https://github.com/jcfossati/ForSureLLM" target="_blank">GitHub</a>
+        <a href="https://huggingface.co/jcfossati/ForSureLLM" target="_blank">Model</a>
+        <span style="color:var(--fsl-muted)">95.2% adversarial · +20.2 pts vs Haiku 4.5</span>
+      </div>
+    </div>
+    """)
+
+    with gr.Column(elem_classes="fsl-input-card"):
+        inp = gr.Textbox(
+            label="phrase",
+            placeholder="tape une phrase… (ex: carrément, laisse tomber, il pleut dehors)",
+            lines=1,
+            autofocus=True,
+            show_label=False,
+        )
+        thr = gr.Slider(0, 1, value=0, step=0.01, label="threshold (force unknown si conf < seuil)",
+                        elem_classes="fsl-threshold")
+
+    gr.HTML('<div id="fsl-presets-label">exemples</div>')
+    with gr.Row(elem_classes="fsl-presets-row"):
+        preset_btns = [gr.Button(p, size="sm") for p in PRESETS]
+
+    out = gr.HTML(value=EMPTY_HTML)
+
+    inp.change(render_result, inputs=[inp, thr], outputs=[out], show_progress="hidden")
+    thr.change(render_result, inputs=[inp, thr], outputs=[out], show_progress="hidden")
+    for btn, p in zip(preset_btns, PRESETS):
+        btn.click(lambda v=p: v, outputs=[inp])
+
 
 if __name__ == "__main__":
     demo.launch()
