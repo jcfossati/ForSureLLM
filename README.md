@@ -321,9 +321,6 @@ ForSureLLM/
 ├── tests/
 │   └── test_classifier.py         # 37 tests unitaires
 │
-├── docs/
-│   └── brief.md                   # brief projet
-│
 ├── llm_config.yaml                # config modèles LLM (éditable)
 ├── .env.example                   # template clés API
 └── checkpoints/                   # artefacts training (gitignored)
