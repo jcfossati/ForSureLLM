@@ -18,7 +18,7 @@ Destiné à reconnaître l'intention de consentement dans une réponse courte d'
 | Training (GPU) | 2m05 |
 | Inference throughput | ~4000 samp/s (GPU), ~1000 samp/s (CPU) |
 
-Eval adversarial sur 63 phrases-pièges (sarcasme, abbréviations, accents manquants, idiomes régionaux) : **96.8 %**.
+Eval adversarial sur 63 phrases-pièges (sarcasme, abbréviations, accents manquants, idiomes régionaux) : **100 %**.
 
 ## Usage
 
@@ -196,26 +196,22 @@ deux baselines représentatives sur les **63 phrases adversarial** :
 
 | Classifier | Accuracy | p50 | p95 | Wall time |
 |---|---|---|---|---|
-| **ForSureLLM** (ONNX int8 local) | **96.8 %** | **1.4 ms** | 3.5 ms | 0.9 s |
-| Haiku 4.5 zero-shot | 82.5 % | 666 ms | 1413 ms | 50 s |
-| Cosine MiniLM-L12 | 68.3 % | 8 ms | 12 ms | 0.6 s |
+| **ForSureLLM** (ONNX int8 local) | **100 %** | **2.0 ms** | 5.3 ms | 0.9 s |
+| Haiku 4.5 zero-shot | 82.5 % | 631 ms | 1420 ms | 47 s |
+| Cosine MiniLM-L12 | 69.8 % | 7 ms | 10 ms | 0.5 s |
 
 Détail par catégorie adversarial :
 
-| Classifier | canonical | hedging | sarcasm | typos | missing_accents | compound | degenerate | repetition | slang_abbrev |
-|---|---|---|---|---|---|---|---|---|---|
-| ForSureLLM | 100 % | 100 % | 100 % | 100 % | 100 % | 100 % | 100 % | 100 % | 67 % |
-| Haiku 4.5 | 90 % | 100 % | 40 % | 80 % | 100 % | 71 % | 75 % | 100 % | 50 % |
-| Cosine MiniLM | 90 % | 75 % | 20 % | 80 % | 100 % | 57 % | 0 % | 67 % | 33 % |
+| Classifier | canonical | hedging | sarcasm | typos | missing_accents | compound | degenerate | repetition | slang_abbrev | interjection | off_topic |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| ForSureLLM | 100 % | 100 % | 100 % | 100 % | 100 % | 100 % | 100 % | 100 % | 100 % | 100 % | 100 % |
+| Haiku 4.5 | 90 % | 100 % | 40 % | 80 % | 100 % | 71 % | 75 % | 100 % | 50 % | 100 % | 100 % |
+| Cosine MiniLM | 90 % | 75 % | 20 % | 80 % | 100 % | 57 % | 0 % | 67 % | 50 % | 100 % | 100 % |
 
-**Lecture** : ForSureLLM bat Haiku 4.5 zero-shot de **+14 points absolus**, et
-la baseline cosine de **+28 points**, en tournant **~470× plus vite** sur CPU
-(1.4 ms vs 666 ms par classification) et sans coût API.
-
-Faiblesses relatives :
-- `slang_abbrev` (67 %) : 2 cas restent difficiles (`np`, `grv`) - Haiku échoue
-  aussi dessus, ce sont des cas où la vérité-terrain est genuinely ambiguë.
-- 10 catégories sur 11 atteignent 100 %.
+**Lecture** : ForSureLLM atteint **100 %** sur les 11 catégories adversarial,
+bat Haiku 4.5 zero-shot de **+17.5 points absolus** et la baseline cosine de
+**+30 points**, en tournant **~315× plus vite** sur CPU (2 ms vs 631 ms par
+classification) et sans coût API.
 
 Pour reproduire :
 

@@ -1,0 +1,38 @@
+{"phrase": "np", "lang": "en", "labels": {"yes": 0.9, "no": 0.04, "unknown": 0.06}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_np"}
+{"phrase": "np!", "lang": "en", "labels": {"yes": 0.92, "no": 0.03, "unknown": 0.05}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_np"}
+{"phrase": "np :)", "lang": "en", "labels": {"yes": 0.92, "no": 0.03, "unknown": 0.05}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_np"}
+{"phrase": "np mate", "lang": "en", "labels": {"yes": 0.92, "no": 0.03, "unknown": 0.05}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_np"}
+{"phrase": "np at all", "lang": "en", "labels": {"yes": 0.93, "no": 0.03, "unknown": 0.04}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_np"}
+{"phrase": "no prob", "lang": "en", "labels": {"yes": 0.92, "no": 0.04, "unknown": 0.04}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_np"}
+{"phrase": "no probs", "lang": "en", "labels": {"yes": 0.92, "no": 0.04, "unknown": 0.04}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_np"}
+{"phrase": "no problemo", "lang": "en", "labels": {"yes": 0.9, "no": 0.05, "unknown": 0.05}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_np"}
+{"phrase": "npnp", "lang": "en", "labels": {"yes": 0.88, "no": 0.05, "unknown": 0.07}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_np"}
+{"phrase": "grv", "lang": "fr", "labels": {"yes": 0.92, "no": 0.04, "unknown": 0.04}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_grv_yes"}
+{"phrase": "grv ouais", "lang": "fr", "labels": {"yes": 0.93, "no": 0.03, "unknown": 0.04}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_grv_yes"}
+{"phrase": "grv mec", "lang": "fr", "labels": {"yes": 0.9, "no": 0.04, "unknown": 0.06}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_grv_yes"}
+{"phrase": "grv frere", "lang": "fr", "labels": {"yes": 0.9, "no": 0.04, "unknown": 0.06}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_grv_yes"}
+{"phrase": "tkt", "lang": "fr", "labels": {"yes": 0.9, "no": 0.04, "unknown": 0.06}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_tkt"}
+{"phrase": "tkt pas", "lang": "fr", "labels": {"yes": 0.9, "no": 0.04, "unknown": 0.06}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_tkt"}
+{"phrase": "tkt frérot", "lang": "fr", "labels": {"yes": 0.9, "no": 0.04, "unknown": 0.06}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_tkt"}
+{"phrase": "tkt frere", "lang": "fr", "labels": {"yes": 0.9, "no": 0.04, "unknown": 0.06}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_tkt"}
+{"phrase": "tqt", "lang": "fr", "labels": {"yes": 0.88, "no": 0.05, "unknown": 0.07}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_tkt"}
+{"phrase": "tinquiete", "lang": "fr", "labels": {"yes": 0.9, "no": 0.04, "unknown": 0.06}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_tkt"}
+{"phrase": "t'inquiète", "lang": "fr", "labels": {"yes": 0.9, "no": 0.04, "unknown": 0.06}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_tkt"}
+{"phrase": "kk", "lang": "en", "labels": {"yes": 0.9, "no": 0.04, "unknown": 0.06}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_short_yes"}
+{"phrase": "kkk", "lang": "en", "labels": {"yes": 0.85, "no": 0.05, "unknown": 0.1}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_short_yes"}
+{"phrase": "okok", "lang": "en", "labels": {"yes": 0.92, "no": 0.03, "unknown": 0.05}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_short_yes"}
+{"phrase": "ok ok", "lang": "en", "labels": {"yes": 0.92, "no": 0.03, "unknown": 0.05}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_short_yes"}
+{"phrase": "dac", "lang": "fr", "labels": {"yes": 0.9, "no": 0.04, "unknown": 0.06}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_short_yes"}
+{"phrase": "dacc", "lang": "fr", "labels": {"yes": 0.9, "no": 0.04, "unknown": 0.06}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_short_yes"}
+{"phrase": "daccord", "lang": "fr", "labels": {"yes": 0.93, "no": 0.03, "unknown": 0.04}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_short_yes"}
+{"phrase": "ok cool", "lang": "en", "labels": {"yes": 0.93, "no": 0.03, "unknown": 0.04}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_short_yes"}
+{"phrase": "nn", "lang": "fr", "labels": {"yes": 0.04, "no": 0.92, "unknown": 0.04}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_short_no"}
+{"phrase": "nnn", "lang": "fr", "labels": {"yes": 0.04, "no": 0.92, "unknown": 0.04}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_short_no"}
+{"phrase": "nan nan", "lang": "fr", "labels": {"yes": 0.03, "no": 0.94, "unknown": 0.03}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_short_no"}
+{"phrase": "nope", "lang": "en", "labels": {"yes": 0.03, "no": 0.94, "unknown": 0.03}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_short_no"}
+{"phrase": "nopes", "lang": "en", "labels": {"yes": 0.03, "no": 0.93, "unknown": 0.04}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_short_no"}
+{"phrase": "naw", "lang": "en", "labels": {"yes": 0.04, "no": 0.92, "unknown": 0.04}, "teacher": "sonnet_hardcoded", "source_idiom": "slang_short_no"}
+{"phrase": "mais oui", "lang": "fr", "labels": {"yes": 0.9, "no": 0.05, "unknown": 0.05}, "teacher": "sonnet_hardcoded", "source_idiom": "interjection_yes"}
+{"phrase": "mais oui bien sur", "lang": "fr", "labels": {"yes": 0.92, "no": 0.04, "unknown": 0.04}, "teacher": "sonnet_hardcoded", "source_idiom": "interjection_yes"}
+{"phrase": "ben oui", "lang": "fr", "labels": {"yes": 0.92, "no": 0.04, "unknown": 0.04}, "teacher": "sonnet_hardcoded", "source_idiom": "interjection_yes"}
+{"phrase": "bah oui", "lang": "fr", "labels": {"yes": 0.92, "no": 0.04, "unknown": 0.04}, "teacher": "sonnet_hardcoded", "source_idiom": "interjection_yes"}

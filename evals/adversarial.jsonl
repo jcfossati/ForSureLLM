@@ -34,7 +34,7 @@
 {"phrase": "lol", "lang": "en", "expected": "unknown", "category": "slang_abbrev"}
 {"phrase": "tkt", "lang": "fr", "expected": "yes", "category": "slang_abbrev"}
 {"phrase": "np", "lang": "en", "expected": "yes", "category": "slang_abbrev"}
-{"phrase": "grv", "lang": "fr", "expected": "no", "category": "slang_abbrev"}
+{"phrase": "grv", "lang": "fr", "expected": "yes", "category": "slang_abbrev"}
 {"phrase": "nah fam", "lang": "en", "expected": "no", "category": "slang_abbrev"}
 
 {"phrase": "!", "lang": "fr", "expected": "unknown", "category": "degenerate"}

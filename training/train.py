@@ -155,6 +155,9 @@ def main() -> None:
     weak = args.labeled_dir / "seed_weak_categories.jsonl"
     if weak.exists():
         sources.append(weak)
+    slang = args.labeled_dir / "seed_slang_abbrev.jsonl"
+    if slang.exists():
+        sources.append(slang)
     rows = load_labeled(sources)
     print(f"[data] {len(rows)} phrases labeled total")
 

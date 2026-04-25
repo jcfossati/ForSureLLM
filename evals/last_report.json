@@ -1,9 +1,9 @@
 {
   "total": 63,
-  "correct": 61,
-  "accuracy": 0.968,
+  "correct": 63,
+  "accuracy": 1.0,
   "known_failures": 0,
-  "unexpected_failures": 2,
+  "unexpected_failures": 0,
   "by_category": {
     "canonical": {
       "correct": 10,
@@ -69,11 +69,11 @@
       "unexpected_failures": 0
     },
     "slang_abbrev": {
-      "correct": 4,
+      "correct": 6,
       "total": 6,
-      "accuracy": 0.667,
+      "accuracy": 1.0,
       "known_failures": 0,
-      "unexpected_failures": 2
+      "unexpected_failures": 0
     },
     "typos": {
       "correct": 5,
