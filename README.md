@@ -16,6 +16,7 @@ Destiné à reconnaître l'intention de consentement dans une réponse courte d'
   - [Variante prunée FR+EN (24 MB)](#variante-prunée-fren-24-mb)
 - [Installation](#installation)
 - [Interface web de test](#interface-web-de-test)
+- [API de production (FastAPI + Docker)](#api-de-production-fastapi--docker)
 - [Architecture du pipeline](#architecture-du-pipeline)
 - [Reproduire l'entraînement](#reproduire-lentraînement)
 - [Configuration multi-provider LLM](#configuration-multi-provider-llm)
@@ -160,6 +161,52 @@ curl -X POST http://localhost:8000/classify \
      -H 'Content-Type: application/json' \
      -d '{"phrase": "ouais grave", "threshold": 0.0}'
 # {"label":"yes","confidence":0.98,"probabilities":{"yes":0.98,"no":0.01,"unknown":0.01},"tokens":["<s>","▁ou","ais","▁grave","</s>"]}
+```
+
+## API de production (FastAPI + Docker)
+
+Une API HTTP plus minimaliste et orientée prod (pas de page HTML, pas de tokens dans la réponse, batch endpoint, healthchecks, logs JSON struct) — distincte du serveur de test ci-dessus. Pensée pour décharger les coûts d'un autre service qui paye un LLM hosté pour des classifications oui/non/incertain.
+
+```bash
+# Build (variante prunée par défaut, image ~291 MB) :
+docker build -t forsurellm-api -f api/Dockerfile .
+
+# Variante full multilingual (image ~380 MB) :
+docker build --build-arg MODEL_VARIANT=full -t forsurellm-api:full -f api/Dockerfile .
+
+# Run :
+docker run -d -p 8000:8000 --name forsurellm forsurellm-api
+
+# Ou via compose (lit MODEL_VARIANT depuis l'env, défault pruned) :
+cd api && docker compose up -d
+```
+
+**Endpoints** :
+
+| Méthode | Route | Body | Réponse |
+|---|---|---|---|
+| `POST` | `/classify` | `{phrase, threshold}` | `{label, confidence, probabilities}` |
+| `POST` | `/classify/batch` | `{phrases: [...], threshold}` (max 100) | `{results: [...], duration_ms}` |
+| `GET` | `/info` | — | `{variant, onnx_file, size_mb, vocab_size, temperature, api_version}` |
+| `GET` | `/health` | — | `{status: "ok"}` (liveness) |
+| `GET` | `/ready` | — | `{status: "ready"}` ou 503 (readiness, modèle chargé) |
+
+**Caractéristiques** :
+- Le modèle est chargé **une fois au démarrage** (lifespan handler), pas à la première requête
+- **Batch endpoint** : 100 phrases dans la même requête → ~5 ms par phrase au lieu de ~5 ms réseau + 2 ms compute par appel séparé. Gros gain en pipeline.
+- **Logs JSON structurés** sur stdout (compatibles Loki, CloudWatch, Datadog, etc.)
+- **Healthcheck Docker** intégré, healthcheck Compose configuré
+- Image basée sur `python:3.12-slim`, multi-stage build, l'image finale ne contient pas de compilateur ni la stdlib de build
+- L'utilisateur Linux dans le container est non-root (`app:app`)
+- ONNX du modèle baked dans l'image au moment du build (téléchargé depuis HuggingFace Model repo)
+
+**Calcul d'optimisation de coût type** : si ton autre service appelle Haiku 4.5 zero-shot pour classifier ~100 000 phrases/mois (typiquement chatbot ou form), ça coûte ~$3-10/mois (selon prompt size) + 600 ms de latence p50. Une instance Docker ForSureLLM tourne en continu pour ~$0.50-1/mois (1 vCPU, 512 MB RAM sur Fly/Render/Hetzner) avec 2 ms p50 et 0 coût d'API. ROI positif dès ~10 000 classifications/mois.
+
+```bash
+# Test rapide du batch endpoint :
+curl -X POST http://localhost:8000/classify/batch \
+     -H 'Content-Type: application/json' \
+     -d '{"phrases": ["ouais grave", "tu rêves", "peut-être", "no cap"], "threshold": 0}'
 ```
 
 ## Architecture du pipeline

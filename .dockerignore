@@ -1,0 +1,52 @@
+# Heavy or irrelevant files we never need in the Docker build context.
+
+# Training artefacts (regenerated, gitignored)
+checkpoints/
+data/raw/
+data/labeled/
+data/splits/
+
+# Eval reports + benchmarks
+evals/
+
+# HF Space + static demo (separate deploy)
+space/
+web/
+
+# Python build/cache
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+build/
+dist/
+
+# IDE / editor / OS
+.vscode/
+.idea/
+.DS_Store
+.claude/
+
+# Tests + dev tooling (not needed in prod image)
+tests/
+training/
+tools/
+notebooks/
+
+# Local secrets + env
+.env
+.env.*
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Docs (keep README.md — hatchling needs it; exclude the others)
+README_en.md
+LICENSE
+docs/
