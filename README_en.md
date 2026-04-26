@@ -8,6 +8,25 @@ Distilled `yes` / `no` / `unknown` classifier, EN + FR. Local inference with no 
 
 Designed to recognize consent intent in a user's short reply (bot, CLI, IVR, automation). The host application tracks the state of the pending action; the classifier only says whether the user **agrees**, **refuses**, or **hesitates**.
 
+## Table of contents
+
+- [Metrics](#metrics)
+- [Usage](#usage)
+  - [Action confirmation (bot, IVR, automation)](#action-confirmation-bot-ivr-automation)
+  - [FR+EN pruned variant (24 MB)](#fren-pruned-variant-24-mb)
+- [Installation](#installation)
+- [Web test interface](#web-test-interface)
+- [Pipeline architecture](#pipeline-architecture)
+- [Reproducing training](#reproducing-training)
+- [Multi-provider LLM configuration](#multi-provider-llm-configuration)
+- [Tests & eval](#tests--eval)
+- [Benchmark vs baselines](#benchmark-vs-baselines)
+- [Calibration & threshold](#calibration--threshold)
+- [What works well](#what-works-well)
+- [Limitations](#limitations)
+- [Roadmap](#roadmap)
+- [Structure](#structure)
+
 ## Metrics
 
 | | |
@@ -108,12 +127,40 @@ LLM is downloadable on Huggingface : https://huggingface.co/jcfossati/ForSureLLM
 
 ## Web test interface
 
+A FastAPI + embedded HTML interface to test the classifier locally without depending on the HF Space demo (useful for iterating on the model, debugging a specific case, or testing the pruned variant).
+
 ```bash
-pip install -e ".[web]"    # fastapi + uvicorn
-python tools/server.py
+pip install -e ".[web]"                          # fastapi + uvicorn (on top of the base install)
+
+python tools/server.py                           # default model (113 MB), http://localhost:8000
+python tools/server.py --variant _fr-en          # pruned variant (24 MB)
+python tools/server.py --port 9000 --host 0.0.0.0  # custom host/port
 ```
 
-Then open `http://localhost:8000` — live input, threshold slider, distribution bars, token visualization, 17 clickable presets.
+**Exposed endpoints**:
+
+| Method | Route | Description |
+|---|---|---|
+| `GET` | `/` | HTML test page (`web/index.html`) |
+| `GET` | `/info` | `{variant, onnx_file, size_mb, vocab_size, temperature}` — which model is loaded |
+| `POST` | `/classify` | Body `{phrase, threshold}` → `{label, confidence, probabilities, tokens}` |
+
+**UI features**:
+- Live input with 150 ms debounce (classifies on every keystroke)
+- Threshold slider to test the `unknown` fallback (see action confirmation section)
+- Header badge showing the loaded variant (default vs `_fr-en`) with size + vocab
+- Color-coded distribution bars (yes green, no red, unknown yellow)
+- Token list produced by the tokenizer (useful to understand segmentation)
+- 17 clickable presets covering typical cases (sarcasm, idioms, slang, punctuation)
+
+**Direct API call example**:
+
+```bash
+curl -X POST http://localhost:8000/classify \
+     -H 'Content-Type: application/json' \
+     -d '{"phrase": "ouais grave", "threshold": 0.0}'
+# {"label":"yes","confidence":0.98,"probabilities":{"yes":0.98,"no":0.01,"unknown":0.01},"tokens":["<s>","▁ou","ais","▁grave","</s>"]}
+```
 
 ## Pipeline architecture
 
