@@ -116,6 +116,19 @@ classify("carrément")   # same result, from a 5x lighter model
 
 **Tradeoff**: tokens outside FR+EN become `<unk>` (Spanish/German/Cyrillic/etc. not supported). Acceptable for a focused FR+EN product. Use cases where pruning makes a real difference: edge / mobile / IoT (a Raspberry Pi 4 GB no longer saturates), multi-tenant servers (4× more instances per machine), serverless cold start (333 MB less to allocate).
 
+**Real-world behavior on multilingual inputs** (measured on 18 phrases across 8 languages — try it live via the dropdown in the [HF demo](https://huggingface.co/spaces/jcfossati/ForSureLLM)):
+
+| Category | Example | Full | Pruned FR+EN |
+|---|---|---|---|
+| Short isolated Latin words | `sì`, `da`, `ja` | yes | yes ✓ (subword paths shared with FR/EN) |
+| Latin script close to FR/EN | `selbstverständlich`, `assolutamente sì`, `auf keinen Fall` | yes/no | yes/no ✓ (lexical transfer) |
+| Latin script semantic trap | `claro que sí` (ES) | **yes** 0.98 | **no** 0.94 ❌ (reprojected to a misleading FR neighbor) |
+| Cyrillic | `нет` (Russian = no) | **no** 0.98 | **yes** 0.62 ⚠️ (catastrophic false positive) |
+| Cyrillic / Greek / Arabic | `конечно`, `ναι βέβαια`, `نعم` | yes | unknown 0.84-0.89 (tokens dropped → `<unk>`) |
+| CJK (Chinese / Japanese) | `当然可以`, `もちろんです` | yes | unknown 0.84 |
+
+**Reading**: for pure FR+EN inputs, both variants are **bit-identical**. For close Latin languages (ES, IT, DE), pruning often preserves the prediction via lexical transfer but can break on semantic traps (`claro que sí` → no). For non-Latin scripts, the pruned model degenerates to `unknown` in the best case, and **flips the meaning** in the worst (cf. Russian `нет`). If you deploy in a multi-country context, keep the full variant; if you strictly target FR+EN, the pruned one is risk-free.
+
 ## Installation
 
 ```bash
