@@ -16,7 +16,7 @@ Destiné à reconnaître l'intention de consentement dans une réponse courte d'
 | ECE (calibration) | **0.012** |
 | Latence CPU (mean) | **2.6 ms** |
 | Latence CPU (p95) | 3.9 ms |
-| Taille modèle | 113 MB |
+| Taille modèle | 113 MB (full multilingual) · **24 MB (pruné FR+EN)** |
 | Training (GPU) | 2m05 |
 | Inference throughput | ~4000 samp/s (GPU), ~1000 samp/s (CPU) |
 
@@ -53,6 +53,37 @@ classify("ouais", threshold=0.9)        # ("yes", 0.97) → action déclenchée
 ```
 
 Pourquoi : certains idiomes culturels (`yeah right`, `tu m'étonnes`, `oh toootally`) sont par défaut sarcastiques en usage général mais peuvent être sincères chez un utilisateur qui ne ponctue pas. Avec un seuil élevé, ces cas borderline tombent en `unknown` → ton app re-prompte au lieu de déclencher la mauvaise action. C'est strictement plus sûr en confirmation d'action ; le coût (un re-prompt occasionnel) est faible comparé à exécuter l'inverse de l'intention de l'utilisateur.
+
+### Variante prunée FR+EN (24 MB)
+
+Le modèle de base couvre 50+ langues via un vocab SentencePiece de 250 002 tokens (≈ 88 MB d'embeddings sur les 113 MB totaux). La variante prunée jette les tokens inutilisés par le corpus FR+EN, gardant 5 424 tokens utiles + filet de sécurité Latin-1.
+
+```bash
+# Génération (une fois) :
+python tools/prune_vocab.py
+python training/export.py --src checkpoints/best_fr-en --work-dir checkpoints/onnx_fr-en --out-suffix _fr-en
+
+# Sélection à l'inférence via env var :
+FORSURELLM_VARIANT=_fr-en python tools/server.py
+```
+
+```python
+import os; os.environ["FORSURELLM_VARIANT"] = "_fr-en"
+from forsurellm import classify
+classify("carrément")   # même résultat, depuis un modèle 5× plus léger
+```
+
+| | Original | Pruné FR+EN |
+|---|---|---|
+| ONNX int8 | 113 MB | **24 MB** (-79 %) |
+| Tokenizer | 17 MB | **0.5 MB** (-97 %) |
+| **Total déploiement** | **130 MB** | **24.5 MB** (-81 %) |
+| Adversarial 124 cas | 95.2 % | **95.2 %** (identique) |
+| Robustness 1227 variantes | 95.8 % | **95.8 %** (identique) |
+| Tests unitaires | 68/68 | **68/68** |
+| Latence p50 CPU | 2.0 ms | **1.96 ms** |
+
+Tradeoff : tokens hors-FR/EN deviennent `<unk>` (espagnol/allemand/cyrillique/etc. non supportés). Acceptable pour un produit FR+EN ciblé.
 
 ## Installation
 

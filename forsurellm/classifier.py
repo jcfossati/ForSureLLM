@@ -1,7 +1,14 @@
-"""Runtime inference : charge le modèle ONNX int8 et expose classify()."""
+"""Runtime inference : charge le modèle ONNX int8 et expose classify().
+
+Variante de modèle : par défaut charge `forsurellm-int8.onnx`. Pour basculer
+sur une variante (ex: vocab pruné), définir `FORSURELLM_VARIANT=_fr-en` —
+le suffix sera appliqué aux fichiers `forsurellm-int8{suffix}.onnx`,
+`tokenizer{suffix}.json`, `config{suffix}.json`.
+"""
 from __future__ import annotations
 
 import json
+import os
 import re
 import unicodedata
 from functools import lru_cache
@@ -12,6 +19,7 @@ import onnxruntime as ort
 from tokenizers import Tokenizer
 
 _MODEL_DIR = Path(__file__).parent / "models"
+_VARIANT = os.environ.get("FORSURELLM_VARIANT", "")
 
 # Pré-processeur : une phrase sans aucune lettre (ex: "!", "?", "...", "123",
 # espaces seuls, vide) ne peut pas porter d'intention yes/no - on court-circuite
@@ -116,12 +124,22 @@ def _normalize(phrase: str) -> str:
 
 @lru_cache(maxsize=1)
 def _load():
-    with (_MODEL_DIR / "config.json").open("r", encoding="utf-8") as f:
+    cfg_path = _MODEL_DIR / f"config{_VARIANT}.json"
+    if not cfg_path.exists():
+        cfg_path = _MODEL_DIR / "config.json"
+    with cfg_path.open("r", encoding="utf-8") as f:
         cfg = json.load(f)
-    tokenizer = Tokenizer.from_file(str(_MODEL_DIR / "tokenizer.json"))
+    tok_name = cfg.get("tokenizer_file", f"tokenizer{_VARIANT}.json")
+    tok_path = _MODEL_DIR / tok_name
+    if not tok_path.exists():
+        tok_path = _MODEL_DIR / "tokenizer.json"
+    tokenizer = Tokenizer.from_file(str(tok_path))
     tokenizer.enable_truncation(max_length=cfg["max_length"])
+    onnx_path = _MODEL_DIR / f"forsurellm-int8{_VARIANT}.onnx"
+    if not onnx_path.exists():
+        onnx_path = _MODEL_DIR / "forsurellm-int8.onnx"
     session = ort.InferenceSession(
-        str(_MODEL_DIR / "forsurellm-int8.onnx"),
+        str(onnx_path),
         providers=["CPUExecutionProvider"],
     )
     input_names = {i.name for i in session.get_inputs()}
