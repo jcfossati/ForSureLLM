@@ -209,6 +209,32 @@ curl -X POST http://localhost:8000/classify/batch \
      -d '{"phrases": ["ouais grave", "tu rêves", "peut-être", "no cap"], "threshold": 0}'
 ```
 
+**Workflow complet de déploiement** (machine cible : VPS, serveur dédié, Render/Fly/Hetzner) :
+
+```bash
+# 1. Sur la machine où tu veux faire tourner l'API
+git clone https://github.com/jcfossati/ForSureLLM.git
+cd ForSureLLM
+
+# 2. Build l'image (variante prunée par défaut, ~291 MB)
+docker build -t forsurellm-api -f api/Dockerfile .
+
+# 3. Lance le container (port 8000)
+docker run -d --restart unless-stopped --name forsurellm \
+    -p 8000:8000 forsurellm-api
+
+# 4. Depuis ton autre projet, appelle l'API
+curl -X POST http://<server-ip>:8000/classify/batch \
+     -H 'Content-Type: application/json' \
+     -d '{"phrases": ["yes", "no", "maybe"], "threshold": 0.85}'
+```
+
+**Sécurité réseau** : l'API n'a **pas d'auth intégrée** par choix — il vaut mieux ajouter ça au niveau infra que de réinventer un système de tokens dans le code. Recommandations selon ton contexte :
+- **Réseau privé** (les deux services sont dans le même VPC / overlay Tailscale / Docker network) : aucune auth nécessaire, restreindre l'écoute à `127.0.0.1` ou à l'IP interne via `-p 127.0.0.1:8000:8000`.
+- **API publique** : mettre derrière nginx / Caddy / Traefik avec TLS Let's Encrypt + un check d'header `Authorization: Bearer <token>` ou une whitelist d'IPs. Ne jamais exposer le port 8000 directement à internet sans ces protections.
+
+**Self-hosting cheap** : l'image consomme ~85 MB de RAM (variante prunée) + ~30 MB pour uvicorn → tient sur n'importe quel VPS 512 MB à 1-3 € / mois (Hetzner CX11, OVH Eco, etc.). Pour un usage multi-tenant ou plus chargé, scaler horizontalement avec plusieurs containers + load balancer.
+
 ## Architecture du pipeline
 
 ```

@@ -209,6 +209,32 @@ curl -X POST http://localhost:8000/classify/batch \
      -d '{"phrases": ["ouais grave", "tu rêves", "peut-être", "no cap"], "threshold": 0}'
 ```
 
+**End-to-end deployment workflow** (target machine: VPS, dedicated server, Render/Fly/Hetzner):
+
+```bash
+# 1. On the machine where the API will run
+git clone https://github.com/jcfossati/ForSureLLM.git
+cd ForSureLLM
+
+# 2. Build the image (pruned variant by default, ~291 MB)
+docker build -t forsurellm-api -f api/Dockerfile .
+
+# 3. Run the container (port 8000)
+docker run -d --restart unless-stopped --name forsurellm \
+    -p 8000:8000 forsurellm-api
+
+# 4. From your other project, call the API
+curl -X POST http://<server-ip>:8000/classify/batch \
+     -H 'Content-Type: application/json' \
+     -d '{"phrases": ["yes", "no", "maybe"], "threshold": 0.85}'
+```
+
+**Network security**: the API has **no built-in auth** by design — better to handle this at the infra layer than reinvent a token system in code. Recommendations depending on your context:
+- **Private network** (both services in the same VPC / Tailscale overlay / Docker network): no auth needed, bind to `127.0.0.1` or the internal IP via `-p 127.0.0.1:8000:8000`.
+- **Public API**: put behind nginx / Caddy / Traefik with Let's Encrypt TLS + an `Authorization: Bearer <token>` header check or an IP allowlist. Never expose port 8000 directly to the internet without these protections.
+
+**Cheap self-hosting**: the image uses ~85 MB RAM (pruned variant) + ~30 MB for uvicorn → fits on any 512 MB VPS at $1-3/month (Hetzner CX11, OVH Eco, etc.). For multi-tenant or heavier usage, scale horizontally with multiple containers + load balancer.
+
 ## Pipeline architecture
 
 ```
