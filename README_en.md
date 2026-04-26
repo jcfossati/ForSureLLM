@@ -8,19 +8,38 @@ Distilled `yes` / `no` / `unknown` classifier, EN + FR. Local inference with no 
 
 Designed to recognize consent intent in a user's short reply (bot, CLI, IVR, automation). The host application tracks the state of the pending action; the classifier only says whether the user **agrees**, **refuses**, or **hesitates**.
 
+## Table of contents
+
+- [Metrics](#metrics)
+- [Usage](#usage)
+  - [Action confirmation (bot, IVR, automation)](#action-confirmation-bot-ivr-automation)
+  - [FR+EN pruned variant (24 MB)](#fren-pruned-variant-24-mb)
+- [Installation](#installation)
+- [Web test interface](#web-test-interface)
+- [Pipeline architecture](#pipeline-architecture)
+- [Reproducing training](#reproducing-training)
+- [Multi-provider LLM configuration](#multi-provider-llm-configuration)
+- [Tests & eval](#tests--eval)
+- [Benchmark vs baselines](#benchmark-vs-baselines)
+- [Calibration & threshold](#calibration--threshold)
+- [What works well](#what-works-well)
+- [Limitations](#limitations)
+- [Roadmap](#roadmap)
+- [Structure](#structure)
+
 ## Metrics
 
 | | |
 |---|---|
-| Test accuracy | **91.4 %** |
-| ECE (calibration) | **0.007** |
-| CPU latency (mean) | **2.5 ms** |
-| CPU latency (p95) | 4.3 ms |
-| Model size | 113 MB |
-| Training (GPU) | 2m24 |
+| Test accuracy | **91.7 %** |
+| ECE (calibration) | **0.012** |
+| CPU latency (mean) | **2.6 ms** |
+| CPU latency (p95) | 3.9 ms |
+| Model size | 113 MB (full multilingual) · **24 MB (pruned FR+EN)** |
+| Training (GPU) | 2m05 |
 | Inference throughput | ~4000 samp/s (GPU), ~1000 samp/s (CPU) |
 
-Adversarial eval on 63 trap phrases (sarcasm, abbreviations, missing accents, regional idioms): **88.9 %**.
+Adversarial eval on 124 trap phrases (sarcasm, abbreviations, missing accents, regional idioms, code-switching, Gen-Z slang, conditional, emoji, implied negation/affirmation, politeness, resignation, symbolic): **95.2 %** (118/124).
 
 ## Usage
 
@@ -54,6 +73,48 @@ classify("ouais", threshold=0.9)        # ("yes", 0.97) → action triggered
 
 Why: some cultural idioms (`yeah right`, `oh totally`, `tu m'étonnes`) default to sarcasm in general usage but may be sincere from users who don't punctuate. With a higher threshold, these borderline cases fall into `unknown` → your app re-prompts instead of taking the wrong action. Strictly safer for action confirmation; the cost (an occasional re-prompt) is small compared to executing the opposite of the user's intent.
 
+### FR+EN pruned variant (24 MB)
+
+The base model covers 50+ languages via a 250,002-token SentencePiece vocab (≈ 88 MB of embeddings out of the 113 MB total). The pruned variant drops tokens unused by the FR+EN corpus, keeping 5,424 useful tokens + a Latin-1 safety net.
+
+```bash
+# Generate (one-shot):
+python tools/prune_vocab.py
+python training/export.py --src checkpoints/best_fr-en --work-dir checkpoints/onnx_fr-en --out-suffix _fr-en
+
+# Select at inference via CLI flag (server, eval, robustness, audit, bench):
+python tools/server.py --variant _fr-en
+python tools/eval.py --variant _fr-en
+python tools/robustness.py --variant _fr-en
+
+# Without the flag: default model (113 MB).
+# The FORSURELLM_VARIANT environment variable is also supported.
+```
+
+```python
+# From Python (when not using the CLI tools):
+import os; os.environ["FORSURELLM_VARIANT"] = "_fr-en"
+from forsurellm import classify
+classify("carrément")   # same result, from a 5x lighter model
+```
+
+| | Original | Pruned FR+EN |
+|---|---|---|
+| ONNX int8 (disk) | 113 MB | **24 MB** (-79 %) |
+| Tokenizer (disk) | 17 MB | **0.5 MB** (-97 %) |
+| **Total deployment** | **130 MB** | **24.5 MB** (-81 %) |
+| **Process resident memory** | **+418 MB** | **+85 MB** (-80 %) |
+| Adversarial 124 cases | 95.2 % | **95.2 %** (identical) |
+| Robustness 1227 variants | 95.8 % | **95.8 %** (identical) |
+| Unit tests | 68/68 | **68/68** |
+| Latency p50 CPU | 2.0 ms | **1.96 ms** (unchanged) |
+
+**About RAM**: process memory drops more than the file size. Reasons: ONNX Runtime adds graph metadata and pre-allocated execution buffers, and the tokenizer's Rust hashmaps scale with vocab size. Measured with `psutil.Process().memory_info().rss` after load + a warmup `classify()`.
+
+**About latency**: unchanged. Inference is dominated by the 12 attention layers in the encoder, identical in both variants; pruning only affects the embedding lookup which is O(1).
+
+**Tradeoff**: tokens outside FR+EN become `<unk>` (Spanish/German/Cyrillic/etc. not supported). Acceptable for a focused FR+EN product. Use cases where pruning makes a real difference: edge / mobile / IoT (a Raspberry Pi 4 GB no longer saturates), multi-tenant servers (4× more instances per machine), serverless cold start (333 MB less to allocate).
+
 ## Installation
 
 ```bash
@@ -66,12 +127,40 @@ LLM is downloadable on Huggingface : https://huggingface.co/jcfossati/ForSureLLM
 
 ## Web test interface
 
+A FastAPI + embedded HTML interface to test the classifier locally without depending on the HF Space demo (useful for iterating on the model, debugging a specific case, or testing the pruned variant).
+
 ```bash
-pip install -e ".[web]"    # fastapi + uvicorn
-python tools/server.py
+pip install -e ".[web]"                          # fastapi + uvicorn (on top of the base install)
+
+python tools/server.py                           # default model (113 MB), http://localhost:8000
+python tools/server.py --variant _fr-en          # pruned variant (24 MB)
+python tools/server.py --port 9000 --host 0.0.0.0  # custom host/port
 ```
 
-Then open `http://localhost:8000` — live input, threshold slider, distribution bars, token visualization, 17 clickable presets.
+**Exposed endpoints**:
+
+| Method | Route | Description |
+|---|---|---|
+| `GET` | `/` | HTML test page (`web/index.html`) |
+| `GET` | `/info` | `{variant, onnx_file, size_mb, vocab_size, temperature}` — which model is loaded |
+| `POST` | `/classify` | Body `{phrase, threshold}` → `{label, confidence, probabilities, tokens}` |
+
+**UI features**:
+- Live input with 150 ms debounce (classifies on every keystroke)
+- Threshold slider to test the `unknown` fallback (see action confirmation section)
+- Header badge showing the loaded variant (default vs `_fr-en`) with size + vocab
+- Color-coded distribution bars (yes green, no red, unknown yellow)
+- Token list produced by the tokenizer (useful to understand segmentation)
+- 17 clickable presets covering typical cases (sarcasm, idioms, slang, punctuation)
+
+**Direct API call example**:
+
+```bash
+curl -X POST http://localhost:8000/classify \
+     -H 'Content-Type: application/json' \
+     -d '{"phrase": "ouais grave", "threshold": 0.0}'
+# {"label":"yes","confidence":0.98,"probabilities":{"yes":0.98,"no":0.01,"unknown":0.01},"tokens":["<s>","▁ou","ais","▁grave","</s>"]}
+```
 
 ## Pipeline architecture
 
@@ -190,14 +279,62 @@ Anthropic prompt caching is automatically enabled when the provider is Anthropic
 ## Tests & eval
 
 ```bash
-pytest tests/                      # 37 unit tests (API, EN/FR hard cases, threshold, perf)
-python tools/eval.py             # adversarial eval on 63 curated phrases
+pytest tests/                      # 68 unit tests (API, EN/FR hard cases, threshold, normalization, symbolic, perf)
+python tools/eval.py             # adversarial eval on 124 curated phrases
+python tools/robustness.py       # 1227 surface variants (case, punctuation, whitespace) → 95.8 % stability
 python tools/repl.py             # interactive REPL with visualization
+python tools/bench_baselines.py  # head-to-head comparison (Haiku, cosine, GPT-4o-mini)
 ```
+
+## Benchmark vs baselines
+
+To give a concrete reference point, ForSureLLM is benchmarked against
+two representative baselines on the **124 adversarial phrases**:
+
+- **Haiku 4.5 zero-shot** (Anthropic, minimal prompt) — a premium LLM
+  classifying without specific training
+- **Cosine MiniLM-L12** (`paraphrase-multilingual-MiniLM-L12-v2`) —
+  multilingual embeddings without fine-tuning, classification by
+  similarity to class centroids
+
+| Classifier | Accuracy | p50 | p95 | Wall time |
+|---|---|---|---|---|
+| **ForSureLLM** (local ONNX int8) | **95.2 %** | **1.8 ms** | 4.9 ms | 1.0 s |
+| Haiku 4.5 zero-shot | 75.0 % | 602 ms | 1536 ms | 85 s |
+| Cosine MiniLM-L12 | 67.7 % | 8 ms | 10 ms | 1.0 s |
+
+**Reading**: on a bench expanded to 22 categories (older + new:
+code-switching, Gen-Z slang, conditional, emoji+text, implied
+negation/affirmation, politeness, resignation, symbolic), ForSureLLM
+beats Haiku 4.5 zero-shot by **+20.2 absolute points** and the cosine
+baseline by **+27.5 points**, running **~330× faster** on CPU (1.8 ms
+vs 602 ms per classification) and with no API cost.
+
+Categories where the gap vs Haiku is massive (>30 pts):
+`modern_slang` (100 % vs 43 %), `negated_verb` (83 % vs 17 %), `sarcasm`
+(100 % vs 40 %), `slang_abbrev` (100 % vs 50 %), `symbolic` (100 % vs 40 %),
+`resignation` (83 % vs 33 %).
+
+ForSureLLM residual regressions (6/124, to attack in dedicated PRs):
+- `conditional` (4/6): `only if X happens first`, `yes but only halfway`
+- `code_switching` (6/7): `yes mais non` read as yes
+- `emoji_text` (4/5): `sure 😅` (uncertainty emoji not parsed)
+- `negated_verb` (5/6): `ce n'est pas un non` (FR double negation)
+- `resignation` (5/6): `if I must` (reluctant yes)
+
+To reproduce:
+
+```bash
+pip install -e ".[bench]"            # litellm, sentence-transformers, python-dotenv
+echo "ANTHROPIC_API_KEY=..." >> .env # to enable Haiku (else skipped)
+python tools/bench_baselines.py
+```
+
+Detailed report (per-phrase predictions) is saved in `evals/bench_baselines.json`.
 
 ## Calibration & threshold
 
-The model is **calibrated** via temperature scaling (T=0.689): the returned confidence = actual probability that the class is correct (ECE=0.007, meaning <1% average gap).
+The model is **calibrated** via temperature scaling (T=0.680): the returned confidence = actual probability that the class is correct (ECE=0.012, meaning ~1% average gap).
 
 | Threshold | Mode | Use case |
 |---|---|---|
@@ -277,11 +414,13 @@ ForSureLLM/
 │   └── splits/                    # stratified train/val/test
 │
 ├── evals/
-│   ├── adversarial.jsonl          # 63 curated trap phrases
+│   ├── adversarial.jsonl          # 124 curated trap phrases
+│   ├── bench_baselines.json       # head-to-head vs Haiku 4.5 + cosine
+│   ├── robustness_report.json     # surface-variant stability report
 │   └── last_report.json           # latest eval report
 │
 ├── tests/
-│   └── test_classifier.py         # 37 unit tests
+│   └── test_classifier.py         # 68 unit tests
 │
 ├── llm_config.yaml                # LLM model config (editable)
 ├── .env.example                   # API keys template

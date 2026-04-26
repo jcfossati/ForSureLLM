@@ -1,7 +1,8 @@
 """Évalue le classifier sur l'eval set adversarial.
 
 Usage:
-    python tools/eval.py
+    python tools/eval.py                       # default model
+    python tools/eval.py --variant _fr-en      # pruned variant
 
 Input  : evals/adversarial.jsonl
 Output : rapport console + evals/last_report.json
@@ -20,6 +21,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+import tools._variant  # noqa: F401 — must come before forsurellm import
 from forsurellm import classify
 
 EVAL_PATH = Path(__file__).parent.parent / "evals" / "adversarial.jsonl"

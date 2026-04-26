@@ -1,7 +1,8 @@
 """Serveur web pour tester le classifier en live.
 
 Usage:
-    python scripts/server.py
+    python tools/server.py                      # modèle par défaut (113 MB multilingual)
+    python tools/server.py --variant _fr-en     # variante prunée (24 MB FR+EN)
     # puis ouvre http://localhost:8000
 
 Expose :
@@ -10,10 +11,19 @@ Expose :
 """
 from __future__ import annotations
 
+import argparse
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
+
+# `--variant` is consumed by tools._variant before forsurellm is imported.
+import tools._variant  # noqa: F401
+
+_parser = argparse.ArgumentParser()
+_parser.add_argument("--host", default="127.0.0.1")
+_parser.add_argument("--port", type=int, default=8000)
+_args = _parser.parse_args()
 
 import numpy as np
 import uvicorn
@@ -40,6 +50,25 @@ class ClassifyResponse(BaseModel):
     confidence: float
     probabilities: dict[str, float]
     tokens: list[str]
+
+
+@app.get("/info")
+def info_endpoint() -> dict:
+    tokenizer, session, _, _, temperature = _load()
+    variant = tools._variant._VARIANT or ""
+    onnx_name = f"forsurellm-int8{variant}.onnx"
+    onnx_path = ROOT / "forsurellm" / "models" / onnx_name
+    if not onnx_path.exists():
+        onnx_name = "forsurellm-int8.onnx"
+        onnx_path = ROOT / "forsurellm" / "models" / onnx_name
+    size_mb = onnx_path.stat().st_size / (1024 * 1024) if onnx_path.exists() else None
+    return {
+        "variant": variant or "default",
+        "onnx_file": onnx_name,
+        "size_mb": round(size_mb, 1) if size_mb else None,
+        "vocab_size": tokenizer.get_vocab_size(),
+        "temperature": round(temperature, 3),
+    }
 
 
 @app.post("/classify", response_model=ClassifyResponse)
@@ -73,7 +102,8 @@ def index() -> FileResponse:
 
 
 if __name__ == "__main__":
-    print("Loading model...")
+    variant_label = tools._variant._VARIANT or "(default 113 MB)"
+    print(f"Loading model variant={variant_label!r}...")
     _load()
-    print("Ready. Ouvre http://localhost:8000")
-    uvicorn.run(app, host="127.0.0.1", port=8000, log_level="warning")
+    print(f"Ready. Ouvre http://{_args.host}:{_args.port}")
+    uvicorn.run(app, host=_args.host, port=_args.port, log_level="warning")
