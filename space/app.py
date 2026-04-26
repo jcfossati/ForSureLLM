@@ -1,8 +1,10 @@
 """Gradio demo for ForSureLLM hosted on HuggingFace Spaces.
 
-Loads the ONNX model from the Model repo (jcfossati/ForSureLLM) at startup,
-exposes a yes/no/unknown classifier UI styled to match the static web/index.html
-demo (dark minimalist, color-coded bars, token list).
+Loads BOTH variants (full multilingual + pruned FR+EN) at startup and exposes
+a dropdown so visitors can compare predictions / sizes / speed in real time.
+
+ONNX files are downloaded from the jcfossati/ForSureLLM Model repo at boot.
+Tokenizer + config files are bundled in this Space (small).
 """
 from __future__ import annotations
 
@@ -11,6 +13,7 @@ import json
 import re
 import time
 import unicodedata
+from dataclasses import dataclass
 from pathlib import Path
 
 import gradio as gr
@@ -20,22 +23,62 @@ from huggingface_hub import hf_hub_download
 from tokenizers import Tokenizer
 
 MODEL_REPO = "jcfossati/ForSureLLM"
-ONNX_FILE = "forsurellm-int8.onnx"
 
-# --- Load artefacts ---------------------------------------------------------
+# --- Variant registry ------------------------------------------------------
 ROOT = Path(__file__).parent
-TOKENIZER = Tokenizer.from_file(str(ROOT / "tokenizer.json"))
-with (ROOT / "config.json").open(encoding="utf-8") as f:
-    CFG = json.load(f)
-TOKENIZER.enable_truncation(max_length=CFG["max_length"])
-CLASSES = CFG["classes"]
-TEMPERATURE = float(CFG.get("temperature", 1.0))
 
-print(f"[boot] downloading {ONNX_FILE} from {MODEL_REPO}...")
-ONNX_PATH = hf_hub_download(MODEL_REPO, ONNX_FILE)
-SESSION = ort.InferenceSession(ONNX_PATH, providers=["CPUExecutionProvider"])
-INPUT_NAMES = {i.name for i in SESSION.get_inputs()}
-print(f"[boot] ready (model {Path(ONNX_PATH).stat().st_size / 1024 / 1024:.0f} MB)")
+
+@dataclass
+class Variant:
+    label: str            # display name in the dropdown
+    onnx_remote: str      # filename in the Model repo to download
+    tokenizer_local: str  # bundled tokenizer file in space/
+    config_local: str     # bundled config file in space/
+    tokenizer: Tokenizer = None
+    session: ort.InferenceSession = None
+    classes: list = None
+    input_names: set = None
+    temperature: float = 1.0
+    size_mb: float = 0.0
+    vocab_size: int = 0
+
+
+VARIANTS: dict[str, Variant] = {
+    "Full multilingual (113 MB)": Variant(
+        label="Full multilingual (113 MB)",
+        onnx_remote="forsurellm-int8.onnx",
+        tokenizer_local="tokenizer.json",
+        config_local="config.json",
+    ),
+    "Pruned FR+EN (24 MB)": Variant(
+        label="Pruned FR+EN (24 MB)",
+        onnx_remote="forsurellm-int8_fr-en.onnx",
+        tokenizer_local="tokenizer_fr-en.json",
+        config_local="config_fr-en.json",
+    ),
+}
+DEFAULT_VARIANT = "Pruned FR+EN (24 MB)"
+
+
+def _load_variant(v: Variant) -> None:
+    print(f"[boot] loading {v.label}: downloading {v.onnx_remote}...")
+    onnx_path = hf_hub_download(MODEL_REPO, v.onnx_remote)
+    v.size_mb = round(Path(onnx_path).stat().st_size / (1024 * 1024), 1)
+    v.tokenizer = Tokenizer.from_file(str(ROOT / v.tokenizer_local))
+    with (ROOT / v.config_local).open(encoding="utf-8") as f:
+        cfg = json.load(f)
+    v.tokenizer.enable_truncation(max_length=cfg["max_length"])
+    v.classes = cfg["classes"]
+    v.temperature = float(cfg.get("temperature", 1.0))
+    v.session = ort.InferenceSession(onnx_path, providers=["CPUExecutionProvider"])
+    v.input_names = {i.name for i in v.session.get_inputs()}
+    v.vocab_size = v.tokenizer.get_vocab_size()
+    print(f"[boot] -> {v.label} ready ({v.size_mb} MB ONNX, {v.vocab_size} tokens)")
+
+
+for v in VARIANTS.values():
+    _load_variant(v)
+
 
 # --- Preprocessing (mirror forsurellm/classifier.py) ------------------------
 _HAS_LETTER_RE = re.compile(r"[^\W\d_]", re.UNICODE)
@@ -96,40 +139,42 @@ def _softmax(x: np.ndarray) -> np.ndarray:
     return e / e.sum(axis=-1, keepdims=True)
 
 
-def classify_full(phrase: str, threshold: float = 0.0) -> dict:
-    """Returns {label, confidence, probs: {yes,no,unknown}, tokens, source}."""
+def classify_full(phrase: str, variant_label: str, threshold: float = 0.0) -> dict:
+    """Returns {label, confidence, probs, tokens, source, variant}."""
+    v = VARIANTS[variant_label]
     sym = _classify_symbolic(phrase or "")
     if sym is not None:
         label, conf = sym
-        probs = {c: 0.0 for c in CLASSES}
+        probs = {c: 0.0 for c in v.classes}
         probs[label] = conf
-        return {"label": label, "confidence": conf, "probs": probs, "tokens": [phrase.strip()], "source": "symbolic"}
+        return {"label": label, "confidence": conf, "probs": probs,
+                "tokens": [phrase.strip()], "source": "symbolic", "variant": variant_label}
     if not _HAS_LETTER_RE.search(phrase or ""):
         return {"label": "unknown", "confidence": 1.0,
                 "probs": {"yes": 0.0, "no": 0.0, "unknown": 1.0},
-                "tokens": [], "source": "no-letter shortcut"}
+                "tokens": [], "source": "no-letter shortcut", "variant": variant_label}
 
-    enc = TOKENIZER.encode(_normalize(phrase))
+    enc = v.tokenizer.encode(_normalize(phrase))
     feeds = {"input_ids": np.array([enc.ids], dtype=np.int64),
              "attention_mask": np.array([enc.attention_mask], dtype=np.int64)}
-    if "token_type_ids" in INPUT_NAMES:
+    if "token_type_ids" in v.input_names:
         feeds["token_type_ids"] = np.array([enc.type_ids], dtype=np.int64)
-    feeds = {k: v for k, v in feeds.items() if k in INPUT_NAMES}
-    logits = SESSION.run(None, feeds)[0][0]
-    probs_arr = _softmax(logits / TEMPERATURE)
-    probs = {c: float(p) for c, p in zip(CLASSES, probs_arr)}
+    feeds = {k: x for k, x in feeds.items() if k in v.input_names}
+    logits = v.session.run(None, feeds)[0][0]
+    probs_arr = _softmax(logits / v.temperature)
+    probs = {c: float(p) for c, p in zip(v.classes, probs_arr)}
     idx = int(probs_arr.argmax())
-    label = CLASSES[idx]
+    label = v.classes[idx]
     conf = probs[label]
     if conf < threshold and label != "unknown":
         label = "unknown"
         conf = probs["unknown"]
     return {"label": label, "confidence": conf, "probs": probs,
             "tokens": [t for t in enc.tokens if t not in {"<s>", "</s>", "[CLS]", "[SEP]", "[PAD]"}],
-            "source": "model"}
+            "source": "model", "variant": variant_label}
 
 
-# --- Rendering ---------------------------------------------------------------
+# --- Rendering --------------------------------------------------------------
 EMPTY_HTML = '<div class="fsl-result fsl-result-empty">Tape une phrase pour la classifier.</div>'
 
 RESULT_TEMPLATE = """
@@ -143,7 +188,7 @@ RESULT_TEMPLATE = """
     <div class="fsl-tokens-label">{token_label}</div>
     <div class="fsl-tokens-list">{tokens_html}</div>
   </div>
-  <div class="fsl-meta">{source} · {elapsed_ms:.1f} ms</div>
+  <div class="fsl-meta">{source} · {variant} · {elapsed_ms:.1f} ms</div>
 </div>
 """
 
@@ -156,11 +201,11 @@ BAR_TEMPLATE = """
 """
 
 
-def render_result(phrase: str, threshold: float) -> str:
+def render_result(phrase: str, variant_label: str, threshold: float) -> str:
     if not phrase or not phrase.strip():
         return EMPTY_HTML
     t0 = time.perf_counter()
-    res = classify_full(phrase, threshold)
+    res = classify_full(phrase, variant_label, threshold)
     elapsed_ms = (time.perf_counter() - t0) * 1000
     bars = "".join(
         BAR_TEMPLATE.format(name=cls, pct=res["probs"][cls] * 100, value=res["probs"][cls])
@@ -181,6 +226,7 @@ def render_result(phrase: str, threshold: float) -> str:
         tokens_html=tokens_html,
         token_label=token_label,
         source=res["source"],
+        variant=res["variant"].split(" (")[0],  # short label
         elapsed_ms=elapsed_ms,
     )
 
@@ -230,6 +276,9 @@ CSS = """
 
 .fsl-threshold .wrap { background: transparent !important; }
 .fsl-threshold input[type="range"] { accent-color: var(--fsl-accent) !important; }
+
+.fsl-variant select, .fsl-variant .wrap-inner { background: var(--fsl-surface-2) !important; color: var(--fsl-text) !important; border-color: var(--fsl-border) !important; }
+.fsl-variant label span { color: var(--fsl-muted) !important; font-size: 13px !important; }
 
 .fsl-result {
   background: var(--fsl-surface); border: 1px solid var(--fsl-border); border-radius: 12px;
@@ -300,8 +349,17 @@ with gr.Blocks(title="ForSureLLM", css=CSS, theme=gr.themes.Base()) as demo:
             autofocus=True,
             show_label=False,
         )
-        thr = gr.Slider(0, 1, value=0, step=0.01, label="threshold (force unknown si conf < seuil)",
-                        elem_classes="fsl-threshold")
+        with gr.Row():
+            variant_dd = gr.Dropdown(
+                choices=list(VARIANTS.keys()),
+                value=DEFAULT_VARIANT,
+                label="model variant",
+                elem_classes="fsl-variant",
+                scale=2,
+            )
+            thr = gr.Slider(0, 1, value=0, step=0.01,
+                            label="threshold (force unknown si conf < seuil)",
+                            elem_classes="fsl-threshold", scale=3)
 
     gr.HTML('<div id="fsl-presets-label">exemples</div>')
     with gr.Row(elem_classes="fsl-presets-row"):
@@ -309,8 +367,9 @@ with gr.Blocks(title="ForSureLLM", css=CSS, theme=gr.themes.Base()) as demo:
 
     out = gr.HTML(value=EMPTY_HTML)
 
-    inp.change(render_result, inputs=[inp, thr], outputs=[out], show_progress="hidden")
-    thr.change(render_result, inputs=[inp, thr], outputs=[out], show_progress="hidden")
+    inp.change(render_result, inputs=[inp, variant_dd, thr], outputs=[out], show_progress="hidden")
+    thr.change(render_result, inputs=[inp, variant_dd, thr], outputs=[out], show_progress="hidden")
+    variant_dd.change(render_result, inputs=[inp, variant_dd, thr], outputs=[out], show_progress="hidden")
     for btn, p in zip(preset_btns, PRESETS):
         btn.click(lambda v=p: v, outputs=[inp])
 

@@ -116,6 +116,19 @@ classify("carrément")   # same result, from a 5x lighter model
 
 **Tradeoff**: tokens outside FR+EN become `<unk>` (Spanish/German/Cyrillic/etc. not supported). Acceptable for a focused FR+EN product. Use cases where pruning makes a real difference: edge / mobile / IoT (a Raspberry Pi 4 GB no longer saturates), multi-tenant servers (4× more instances per machine), serverless cold start (333 MB less to allocate).
 
+**Real-world behavior on multilingual inputs** (measured on 18 phrases across 8 languages — try it live via the dropdown in the [HF demo](https://huggingface.co/spaces/jcfossati/ForSureLLM)):
+
+| Category | Example | Full | Pruned FR+EN |
+|---|---|---|---|
+| Short isolated Latin words | `sì`, `da`, `ja` | yes | yes ✓ (subword paths shared with FR/EN) |
+| Latin script close to FR/EN | `selbstverständlich`, `assolutamente sì`, `auf keinen Fall` | yes/no | yes/no ✓ (lexical transfer) |
+| Latin script semantic trap | `claro que sí` (ES) | **yes** 0.98 | **no** 0.94 ❌ (reprojected to a misleading FR neighbor) |
+| Cyrillic | `нет` (Russian = no) | **no** 0.98 | **yes** 0.62 ⚠️ (catastrophic false positive) |
+| Cyrillic / Greek / Arabic | `конечно`, `ναι βέβαια`, `نعم` | yes | unknown 0.84-0.89 (tokens dropped → `<unk>`) |
+| CJK (Chinese / Japanese) | `当然可以`, `もちろんです` | yes | unknown 0.84 |
+
+**Reading**: for pure FR+EN inputs, both variants are **bit-identical**. For close Latin languages (ES, IT, DE), pruning often preserves the prediction via lexical transfer but can break on semantic traps (`claro que sí` → no). For non-Latin scripts, the pruned model degenerates to `unknown` in the best case, and **flips the meaning** in the worst (cf. Russian `нет`). If you deploy in a multi-country context, keep the full variant; if you strictly target FR+EN, the pruned one is risk-free.
+
 ## Installation
 
 ```bash
@@ -409,23 +422,52 @@ Detailed report (per-phrase predictions) is saved in `evals/bench_baselines.json
 
 The model is **calibrated** via temperature scaling (T=0.680): the returned confidence = actual probability that the class is correct (ECE=0.012, meaning ~1% average gap).
 
-| Threshold | Mode | Use case |
+### Threshold sweep measured on 1,302 phrases (test + adversarial)
+
+`tools/compare_variants.py` runs every phrase through both variants (full + pruned) at 8 threshold values, reporting 3 metrics:
+
+- **Global accuracy**: % correct across the corpus (forcing a correct yes to `unknown` counts as wrong)
+- **Coverage**: % of inputs where the final prediction is `yes` or `no` (the rest = `unknown` → re-prompt on the app side)
+- **Confident precision**: `P(correct | prediction ∈ {yes, no})` — *when we say yes/no, how often are we right?* The critical metric for action confirmation.
+
+| Threshold | Accuracy | Coverage | Confident precision | Forced unknowns |
+|---|---|---|---|---|
+| 0.00 | 91.3 % | 72.6 % | 91.4 % | 0 |
+| 0.50 | **91.5 %** | 71.9 % | 92.1 % | 9 |
+| 0.60 | 90.6 % | 70.1 % | 92.8 % | 32 |
+| 0.70 | 89.7 % | 68.4 % | 93.5 % | 55 |
+| 0.80 | 88.1 % | 65.3 % | 94.6 % | 95 |
+| 0.85 | 86.6 % | 63.1 % | **95.2 %** | 124 |
+| 0.90 | 84.6 % | 60.1 % | **96.0 %** | 162 |
+| 0.95 | 78.1 % | 52.5 % | **96.8 %** | 262 |
+
+**Bit-identical predictions between full and pruned** on these 1,302 phrases (all FR+EN). Pruning only affects non-FR/EN languages.
+
+### Recommendation per use case
+
+| Use case | Optimal threshold | Why |
 |---|---|---|
-| `0.0` | Lenient | Always classify, conversational use |
-| `0.7` | Balanced | ~80% of cases, 95%+ precision |
-| `0.9` | Strict | Accepts canonical cases, rest = unknown |
-| `0.95` | Very strict | Auto-accept only clear-cut cases (>95% reliable) |
+| Triage / chat / sentiment (max global accuracy) | **0.50** | accuracy 91.5%, marginal gain vs 0.0 but you pay 9 extra unknowns |
+| **Standard** action confirmation (bot, form, IVR) | **0.85** | 95.2% precision when acting, ~37% re-prompts acceptable |
+| **Paranoid** action confirmation (payment, legal, irreversible) | **0.95** | 96.8% precision but ~48% re-prompts — accept the UX cost |
+| Permissive default (let the app decide) | `0.0` | returns argmax, app handles its own threshold |
 
 Typical production pattern:
 
 ```python
 label, conf = classify(user_reply)
 if conf > 0.95:
-    execute(pending_action)           # auto-accept
-elif conf > 0.7:
-    confirm(pending_action)           # ask for confirmation
+    execute(pending_action)           # auto-accept (96.8% precision)
+elif conf > 0.85:
+    confirm(pending_action)           # ask if confidence is moderate
 else:
-    return "could not understand"     # escalate
+    return "could not understand"     # re-prompt (~37% of traffic)
+```
+
+To reproduce these numbers:
+
+```bash
+python tools/compare_variants.py
 ```
 
 ## What works well
