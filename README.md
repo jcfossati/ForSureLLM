@@ -81,15 +81,20 @@ classify("carrément")   # même résultat, depuis un modèle 5× plus léger
 
 | | Original | Pruné FR+EN |
 |---|---|---|
-| ONNX int8 | 113 MB | **24 MB** (-79 %) |
-| Tokenizer | 17 MB | **0.5 MB** (-97 %) |
+| ONNX int8 (disque) | 113 MB | **24 MB** (-79 %) |
+| Tokenizer (disque) | 17 MB | **0.5 MB** (-97 %) |
 | **Total déploiement** | **130 MB** | **24.5 MB** (-81 %) |
+| **RAM résidente du process** | **+418 MB** | **+85 MB** (-80 %) |
 | Adversarial 124 cas | 95.2 % | **95.2 %** (identique) |
 | Robustness 1227 variantes | 95.8 % | **95.8 %** (identique) |
 | Tests unitaires | 68/68 | **68/68** |
-| Latence p50 CPU | 2.0 ms | **1.96 ms** |
+| Latence p50 CPU | 2.0 ms | **1.96 ms** (inchangée) |
 
-Tradeoff : tokens hors-FR/EN deviennent `<unk>` (espagnol/allemand/cyrillique/etc. non supportés). Acceptable pour un produit FR+EN ciblé.
+**À propos de la RAM** : la mémoire résidente baisse encore plus que la taille fichier. Causes : ONNX Runtime ajoute du métadata graph et des buffers d'exécution préalloués, et les hashmaps Rust du tokenizer sont proportionnels à la taille du vocab. Mesure faite avec `psutil.Process().memory_info().rss` après chargement et un warmup `classify()`.
+
+**À propos de la latence** : inchangée (l'inférence est dominée par les 12 couches d'attention de l'encoder, identiques dans les deux variantes ; le pruning n'affecte que le lookup d'embedding qui est O(1)).
+
+**Tradeoff** : tokens hors-FR/EN deviennent `<unk>` (espagnol/allemand/cyrillique/etc. non supportés). Acceptable pour un produit FR+EN ciblé. Cas d'usage où le pruning fait une vraie différence : edge / mobile / IoT (Raspberry Pi 4 GB ne sature plus), multi-tenant (4× plus d'instances par machine), serverless cold start (333 MB de moins à allouer).
 
 ## Installation
 
