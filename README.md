@@ -421,25 +421,54 @@ dans `evals/bench_baselines.json`.
 
 ## Calibration & seuil
 
-Le modèle est **calibré** par temperature scaling (T=0.676) : la confidence retournée = probabilité réelle que la classe soit correcte (ECE=0.012, soit ~1% d'écart moyen).
+Le modèle est **calibré** par temperature scaling (T=0.680) : la confidence retournée = probabilité réelle que la classe soit correcte (ECE=0.012, soit ~1 % d'écart moyen).
 
-| Threshold | Régime | Usage |
+### Sweep de threshold mesuré sur 1302 phrases (test + adversarial)
+
+`tools/compare_variants.py` exécute toutes les phrases sur les deux variantes (full + pruned) à 8 valeurs de seuil, et reporte 3 métriques :
+
+- **Accuracy globale** : % correct sur tout le corpus (forcer un correct yes en `unknown` compte comme erreur)
+- **Coverage** : % des inputs où la prédiction finale est `yes` ou `no` (le reste = `unknown`, donc re-prompt côté app)
+- **Confident precision** : `P(correct | prédiction ∈ {yes, no})` — *quand on dit yes/no, on a raison combien de fois ?* C'est la métrique critique pour la confirmation d'action.
+
+| Threshold | Accuracy | Coverage | Confident precision | Forced unknowns |
+|---|---|---|---|---|
+| 0.00 | 91.3 % | 72.6 % | 91.4 % | 0 |
+| 0.50 | **91.5 %** | 71.9 % | 92.1 % | 9 |
+| 0.60 | 90.6 % | 70.1 % | 92.8 % | 32 |
+| 0.70 | 89.7 % | 68.4 % | 93.5 % | 55 |
+| 0.80 | 88.1 % | 65.3 % | 94.6 % | 95 |
+| 0.85 | 86.6 % | 63.1 % | **95.2 %** | 124 |
+| 0.90 | 84.6 % | 60.1 % | **96.0 %** | 162 |
+| 0.95 | 78.1 % | 52.5 % | **96.8 %** | 262 |
+
+**Identique à 0 prédiction près entre full et pruned** sur ces 1302 phrases (toutes en FR+EN). Le pruning n'affecte que les langues hors-FR/EN.
+
+### Recommandation par cas d'usage
+
+| Cas d'usage | Threshold optimal | Pourquoi |
 |---|---|---|
-| `0.0` | Laxiste | Toujours classifier, usage conversationnel |
-| `0.7` | Équilibré | ~80% des cas, précision 95%+ |
-| `0.9` | Strict | Accepte les canoniques, reste = unknown |
-| `0.95` | Très strict | Auto-accept des cas clair-cut (>95% fiable) |
+| Triage / chat / sentiment (max global accuracy) | **0.50** | accuracy 91.5 %, gain marginal vs 0.0 mais on paye 9 unknowns en plus |
+| Action confirmation **standard** (bot, formulaire, IVR) | **0.85** | precision 95.2 % quand on agit, ~37 % de re-prompts acceptables |
+| Action confirmation **paranoïaque** (paiement, juridique, irréversible) | **0.95** | precision 96.8 % mais ~48 % de re-prompts — accepte le coût UX |
+| Default permissif (laisse l'app décider) | `0.0` | retourne argmax, l'app gère le seuil elle-même |
 
 Pattern typique en production :
 
 ```python
 label, conf = classify(user_reply)
 if conf > 0.95:
-    execute(pending_action)           # auto-accept
-elif conf > 0.7:
-    confirm(pending_action)           # demander confirmation
+    execute(pending_action)           # auto-accept (precision 96.8 %)
+elif conf > 0.85:
+    confirm(pending_action)           # confirmer si conf modérée
 else:
-    return "could not understand"     # escalader
+    return "could not understand"     # re-prompt (~37 % du trafic)
+```
+
+Pour reproduire les chiffres :
+
+```bash
+python tools/compare_variants.py
 ```
 
 ## Ce qui fonctionne bien
