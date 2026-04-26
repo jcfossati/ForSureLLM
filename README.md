@@ -63,11 +63,17 @@ Le modèle de base couvre 50+ langues via un vocab SentencePiece de 250 002 toke
 python tools/prune_vocab.py
 python training/export.py --src checkpoints/best_fr-en --work-dir checkpoints/onnx_fr-en --out-suffix _fr-en
 
-# Sélection à l'inférence via env var :
-FORSURELLM_VARIANT=_fr-en python tools/server.py
+# Sélection à l'inférence via flag CLI (server, eval, robustness, audit, bench) :
+python tools/server.py --variant _fr-en
+python tools/eval.py --variant _fr-en
+python tools/robustness.py --variant _fr-en
+
+# Sans le flag : modèle par défaut (113 MB).
+# La variable d'environnement FORSURELLM_VARIANT est aussi supportée si besoin.
 ```
 
 ```python
+# Côté Python (cas où on n'utilise pas les CLI) :
 import os; os.environ["FORSURELLM_VARIANT"] = "_fr-en"
 from forsurellm import classify
 classify("carrément")   # même résultat, depuis un modèle 5× plus léger

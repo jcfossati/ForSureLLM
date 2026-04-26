@@ -1,7 +1,8 @@
 """Serveur web pour tester le classifier en live.
 
 Usage:
-    python scripts/server.py
+    python tools/server.py                      # modèle par défaut (113 MB multilingual)
+    python tools/server.py --variant _fr-en     # variante prunée (24 MB FR+EN)
     # puis ouvre http://localhost:8000
 
 Expose :
@@ -10,10 +11,19 @@ Expose :
 """
 from __future__ import annotations
 
+import argparse
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
+
+# `--variant` is consumed by tools._variant before forsurellm is imported.
+import tools._variant  # noqa: F401
+
+_parser = argparse.ArgumentParser()
+_parser.add_argument("--host", default="127.0.0.1")
+_parser.add_argument("--port", type=int, default=8000)
+_args = _parser.parse_args()
 
 import numpy as np
 import uvicorn
@@ -73,7 +83,8 @@ def index() -> FileResponse:
 
 
 if __name__ == "__main__":
-    print("Loading model...")
+    variant_label = tools._variant._VARIANT or "(default 113 MB)"
+    print(f"Loading model variant={variant_label!r}...")
     _load()
-    print("Ready. Ouvre http://localhost:8000")
-    uvicorn.run(app, host="127.0.0.1", port=8000, log_level="warning")
+    print(f"Ready. Ouvre http://{_args.host}:{_args.port}")
+    uvicorn.run(app, host=_args.host, port=_args.port, log_level="warning")

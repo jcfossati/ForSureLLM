@@ -42,6 +42,7 @@ from typing import Callable
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+import tools._variant  # noqa: F401, E402 — must come before forsurellm import
 from forsurellm import classify as forsurellm_classify  # noqa: E402
 
 ADV_PATH    = Path(__file__).parent.parent / "evals" / "adversarial.jsonl"
