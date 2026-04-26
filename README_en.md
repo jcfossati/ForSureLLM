@@ -16,6 +16,7 @@ Designed to recognize consent intent in a user's short reply (bot, CLI, IVR, aut
   - [FR+EN pruned variant (24 MB)](#fren-pruned-variant-24-mb)
 - [Installation](#installation)
 - [Web test interface](#web-test-interface)
+- [Production API (FastAPI + Docker)](#production-api-fastapi--docker)
 - [Pipeline architecture](#pipeline-architecture)
 - [Reproducing training](#reproducing-training)
 - [Multi-provider LLM configuration](#multi-provider-llm-configuration)
@@ -161,6 +162,78 @@ curl -X POST http://localhost:8000/classify \
      -d '{"phrase": "ouais grave", "threshold": 0.0}'
 # {"label":"yes","confidence":0.98,"probabilities":{"yes":0.98,"no":0.01,"unknown":0.01},"tokens":["<s>","▁ou","ais","▁grave","</s>"]}
 ```
+
+## Production API (FastAPI + Docker)
+
+A more minimal, prod-oriented HTTP API (no HTML page, no tokens in response, batch endpoint, healthchecks, structured JSON logs) — distinct from the test server above. Designed to offload costs from another service that pays a hosted LLM for yes/no/unknown classifications.
+
+```bash
+# Build (pruned variant by default, ~291 MB image):
+docker build -t forsurellm-api -f api/Dockerfile .
+
+# Full multilingual variant (~380 MB image):
+docker build --build-arg MODEL_VARIANT=full -t forsurellm-api:full -f api/Dockerfile .
+
+# Run:
+docker run -d -p 8000:8000 --name forsurellm forsurellm-api
+
+# Or via compose (reads MODEL_VARIANT from env, defaults to pruned):
+cd api && docker compose up -d
+```
+
+**Endpoints**:
+
+| Method | Route | Body | Response |
+|---|---|---|---|
+| `POST` | `/classify` | `{phrase, threshold}` | `{label, confidence, probabilities}` |
+| `POST` | `/classify/batch` | `{phrases: [...], threshold}` (max 100) | `{results: [...], duration_ms}` |
+| `GET` | `/info` | — | `{variant, onnx_file, size_mb, vocab_size, temperature, api_version}` |
+| `GET` | `/health` | — | `{status: "ok"}` (liveness) |
+| `GET` | `/ready` | — | `{status: "ready"}` or 503 (readiness, model loaded) |
+
+**Features**:
+- Model loaded **once at startup** (lifespan handler), not on first request
+- **Batch endpoint**: 100 phrases per request → ~5 ms per phrase instead of ~5 ms network + 2 ms compute per separate call. Big pipeline win.
+- **Structured JSON logs** on stdout (compatible with Loki, CloudWatch, Datadog, etc.)
+- Built-in **Docker healthcheck**, configured Compose healthcheck
+- Image based on `python:3.12-slim`, multi-stage build, final image has no compiler and no build stdlib
+- Runs as non-root (`app:app`) inside the container
+- Model ONNX baked into the image at build time (downloaded from HuggingFace Model repo)
+
+**Typical cost-optimization calculation**: if your other service calls Haiku 4.5 zero-shot to classify ~100,000 phrases/month (typical chatbot or form), that's ~$3-10/month (depending on prompt size) + 600 ms p50 latency. One ForSureLLM Docker instance running continuously costs ~$0.50-1/month (1 vCPU, 512 MB RAM on Fly/Render/Hetzner) with 2 ms p50 and 0 API cost. Positive ROI from ~10,000 classifications/month.
+
+```bash
+# Quick batch endpoint test:
+curl -X POST http://localhost:8000/classify/batch \
+     -H 'Content-Type: application/json' \
+     -d '{"phrases": ["ouais grave", "tu rêves", "peut-être", "no cap"], "threshold": 0}'
+```
+
+**End-to-end deployment workflow** (target machine: VPS, dedicated server, Render/Fly/Hetzner):
+
+```bash
+# 1. On the machine where the API will run
+git clone https://github.com/jcfossati/ForSureLLM.git
+cd ForSureLLM
+
+# 2. Build the image (pruned variant by default, ~291 MB)
+docker build -t forsurellm-api -f api/Dockerfile .
+
+# 3. Run the container (port 8000)
+docker run -d --restart unless-stopped --name forsurellm \
+    -p 8000:8000 forsurellm-api
+
+# 4. From your other project, call the API
+curl -X POST http://<server-ip>:8000/classify/batch \
+     -H 'Content-Type: application/json' \
+     -d '{"phrases": ["yes", "no", "maybe"], "threshold": 0.85}'
+```
+
+**Network security**: the API has **no built-in auth** by design — better to handle this at the infra layer than reinvent a token system in code. Recommendations depending on your context:
+- **Private network** (both services in the same VPC / Tailscale overlay / Docker network): no auth needed, bind to `127.0.0.1` or the internal IP via `-p 127.0.0.1:8000:8000`.
+- **Public API**: put behind nginx / Caddy / Traefik with Let's Encrypt TLS + an `Authorization: Bearer <token>` header check or an IP allowlist. Never expose port 8000 directly to the internet without these protections.
+
+**Cheap self-hosting**: the image uses ~85 MB RAM (pruned variant) + ~30 MB for uvicorn → fits on any 512 MB VPS at $1-3/month (Hetzner CX11, OVH Eco, etc.). For multi-tenant or heavier usage, scale horizontally with multiple containers + load balancer.
 
 ## Pipeline architecture
 
