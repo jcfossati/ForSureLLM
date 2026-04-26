@@ -52,6 +52,25 @@ class ClassifyResponse(BaseModel):
     tokens: list[str]
 
 
+@app.get("/info")
+def info_endpoint() -> dict:
+    tokenizer, session, _, _, temperature = _load()
+    variant = tools._variant._VARIANT or ""
+    onnx_name = f"forsurellm-int8{variant}.onnx"
+    onnx_path = ROOT / "forsurellm" / "models" / onnx_name
+    if not onnx_path.exists():
+        onnx_name = "forsurellm-int8.onnx"
+        onnx_path = ROOT / "forsurellm" / "models" / onnx_name
+    size_mb = onnx_path.stat().st_size / (1024 * 1024) if onnx_path.exists() else None
+    return {
+        "variant": variant or "default",
+        "onnx_file": onnx_name,
+        "size_mb": round(size_mb, 1) if size_mb else None,
+        "vocab_size": tokenizer.get_vocab_size(),
+        "temperature": round(temperature, 3),
+    }
+
+
 @app.post("/classify", response_model=ClassifyResponse)
 def classify_endpoint(req: ClassifyRequest) -> ClassifyResponse:
     tokenizer, session, classes, input_names, temperature = _load()

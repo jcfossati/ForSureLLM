@@ -20,8 +20,16 @@
   html, body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
   .container { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
   header { margin-bottom: 40px; }
+  .header-row { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
   h1 { font-size: 24px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.01em; }
   .sub { color: var(--muted); font-size: 13px; }
+  .model-badge {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+    padding: 6px 10px; font-size: 11px; color: var(--muted); font-family: "JetBrains Mono", ui-monospace, monospace;
+    white-space: nowrap;
+  }
+  .model-badge .v { color: var(--accent); font-weight: 600; }
+  .model-badge .meta { color: var(--text); }
   .input-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
   .input-row { display: flex; gap: 8px; }
   input[type="text"] {
@@ -69,8 +77,13 @@
 <body>
 <div class="container">
   <header>
-    <h1>ForSureLLM</h1>
-    <div class="sub">yes / no / unknown classifier · EN + FR · local ONNX int8</div>
+    <div class="header-row">
+      <div>
+        <h1>ForSureLLM</h1>
+        <div class="sub">yes / no / unknown classifier · EN + FR · local ONNX int8</div>
+      </div>
+      <div class="model-badge" id="model-badge" title="Modèle actuellement chargé">…</div>
+    </div>
   </header>
 
   <div class="input-card">
@@ -106,6 +119,12 @@ const threshold = document.getElementById("threshold");
 const thresholdValue = document.getElementById("threshold-value");
 const result = document.getElementById("result");
 const presetsEl = document.getElementById("presets");
+const modelBadge = document.getElementById("model-badge");
+
+fetch("/info").then(r => r.json()).then(info => {
+  const v = info.variant === "default" ? "default" : info.variant.replace(/^_/, "");
+  modelBadge.innerHTML = `<span class="v">${v}</span> · <span class="meta">${info.size_mb} MB · vocab ${info.vocab_size.toLocaleString()}</span>`;
+}).catch(() => { modelBadge.textContent = "model: ?"; });
 
 PRESETS.forEach(p => {
   const b = document.createElement("button");
